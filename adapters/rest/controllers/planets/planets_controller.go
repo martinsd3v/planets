@@ -3,7 +3,7 @@ package planets
 import (
 	"github.com/labstack/echo/v4"
 	"github.com/martinsd3v/planets/adapters/persistence/mongodb/repositories/planets"
-	"github.com/martinsd3v/planets/adapters/web/util"
+	"github.com/martinsd3v/planets/adapters/rest/util"
 	"github.com/martinsd3v/planets/core/domains/planet/services/create"
 	"github.com/martinsd3v/planets/core/domains/planet/services/destroy"
 	"github.com/martinsd3v/planets/core/domains/planet/services/index"

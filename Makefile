@@ -5,7 +5,7 @@ VERSION = $(shell git branch --show-current)
 
 # comandos para execução a api echo
 run-api:
-	VERSION=$(VERSION) go run ./adapters/web/src/main.go
+	VERSION=$(VERSION) go run ./adapters/rest/main.go
 
 run-seeds:
 	VERSION=$(VERSION) go run ./seeds/main.go

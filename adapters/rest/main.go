@@ -10,7 +10,7 @@ import (
 
 	"github.com/martinsd3v/planets/adapters/persistence/mongodb"
 
-	"github.com/martinsd3v/planets/adapters/web/routers"
+	"github.com/martinsd3v/planets/adapters/rest/routers"
 	"github.com/martinsd3v/planets/core/tools/communication"
 	"github.com/martinsd3v/planets/core/tools/providers/logger"
 )
