@@ -1,4 +1,4 @@
-# Projeto Planetas Star Wars
+# Projeto Planetas Star Wars:
 
 Esse projeto de trata de uma POC utilizando os conceitos de Clean Arch, Hexagonal Arch, Clean Code, DDD, e SOLID.
 
@@ -7,6 +7,11 @@ O principal motivo por escolher arquitetura hexagonal foi para deixar o desacopl
 Optei por trabalhar com dois "Domínios" sendo "users" um gerenciamento de usuário simples com autenticação JWT e "planets" com endpoints públicos para **listar planetas** e endpoints de `create`, `update`, e `delete` privados protegidos por autenticação JWT.
 
 Para facilitar os testes adicionei no repositório uma pasta contendo os arquivos do **POSTMAN** pasta importar os arquivos presentes nesta no POSTMAN e sucesso!
+
+## Cobertura por testes:
+
+Para verificar a cobertura de testes basta rodar o comando: `make test-cover`
+![Coverage test](https://github.com/martinsd3v/planets/blob/main/test-cover.png?raw=true)
 
 # Rodando o Projeto
 
