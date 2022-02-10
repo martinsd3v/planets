@@ -2,17 +2,17 @@
 
 Esse projeto de trata de uma POC utilizando os conceitos de Clean Arch, Hexagonal Arch, Clean Code, DDD, e SOLID.
 
-O principal motivo por escolher arquiterura hexagonal foi para deixar o desacoplamento, e divisão de responsábilidades bem claras.
+O principal motivo por escolher arquitetura hexagonal foi para deixar o desacoplamento, e divisão de responsabilidades bem claras.
 
-Optei por trabalhar com dois "Dominios" destindos sendo "users" um gerenciamento de usuário simples com autenticação JWT e "planets" com endpoints publicos para **listar planetas** e endpoints de `create`, `update`, e `delete` privados protejidos por autenticação JWT.
+Optei por trabalhar com dois "Domínios" sendo "users" um gerenciamento de usuário simples com autenticação JWT e "planets" com endpoints públicos para **listar planetas** e endpoints de `create`, `update`, e `delete` privados protegidos por autenticação JWT.
 
-Para facilitar os testes adicionei no repositorio uma pasta contendo os arquivos do **POSTMAN** pasta importar os arquivos presentes nesta pasta no POSTMAN e sucesso!
+Para facilitar os testes adicionei no repositório uma pasta contendo os arquivos do **POSTMAN** pasta importar os arquivos presentes nesta no POSTMAN e sucesso!
 
 # Rodando o Projeto
 
 - Para rodar o projeto é necessário ter o docker, e docker-compose instalado.
 - Com docker devidamente instalado basta rodar o comando `docker-compose up`
-- Url Base: http://localhost:9099
+- Url Base: http://localhost:9099 "Porta pode ser alterada em `config.yml` "
 - Por padrão quando a aplicação sobe via docker compose um usuário é adicionado:
   - Email: emailteste@gmail.com
   - Senha: 123456
