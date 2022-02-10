@@ -11,6 +11,7 @@ Para facilitar os testes adicionei no repositório uma pasta contendo os arquivo
 ## Cobertura por testes:
 
 Para verificar a cobertura de testes basta rodar o comando: `make test-cover`
+
 ![Coverage test](https://github.com/martinsd3v/planets/blob/main/test-coverage.png?raw=true)
 
 # Rodando o Projeto
