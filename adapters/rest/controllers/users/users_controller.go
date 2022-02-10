@@ -3,7 +3,7 @@ package users
 import (
 	"github.com/labstack/echo/v4"
 	"github.com/martinsd3v/planets/adapters/persistence/mongodb/repositories/users"
-	"github.com/martinsd3v/planets/adapters/web/util"
+	"github.com/martinsd3v/planets/adapters/rest/util"
 	"github.com/martinsd3v/planets/core/domains/user/services/authenticate"
 	"github.com/martinsd3v/planets/core/domains/user/services/create"
 	"github.com/martinsd3v/planets/core/domains/user/services/destroy"
