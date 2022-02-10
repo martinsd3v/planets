@@ -1,0 +1,38 @@
+version: "3"
+
+services:
+  mongodb:
+    image: bitnami/mongodb:latest
+    hostname: mongodb
+    environment:
+      MONGODB_USERNAME: "mongodb"
+      MONGODB_PASSWORD: "mongodb123!"
+      MONGODB_DATABASE: "planets"
+      MONGODB_ROOT_PASSWORD: "mongodb123!"
+    ports:
+      - "27017:27017"
+    networks:
+      - planets-network
+
+  planets:
+    build:
+      context: .
+      dockerfile: planets.Dockerfile
+    container_name: planets
+    ports:
+      - "9099:9099"
+    links:
+      - mongodb
+    depends_on:
+      - mongodb
+    environment:
+      WAIT_HOSTS: mongodb:27017
+    networks:
+      - planets-network
+    command: >
+      sh -c "make run-seeds &&
+             make run-api"
+
+networks:
+  planets-network:
+    driver: bridge
