@@ -13,12 +13,7 @@ func SetupRoutes(Echo *echo.Echo) {
 
 	routes.GET("/:UUID", planets.Show())
 	routes.GET("", planets.Index())
-
-	//Private routes authentication is required
-	AuthMiddleware := auth.Auth{}
-	routes.Use(AuthMiddleware.Authorize)
-
-	routes.POST("", planets.Create())
-	routes.PATCH("/:UUID", planets.Update())
-	routes.DELETE("/:UUID", planets.Destroy())
+	routes.POST("", planets.Create(), auth.Authorize)
+	routes.PATCH("/:UUID", planets.Update(), auth.Authorize)
+	routes.DELETE("/:UUID", planets.Destroy(), auth.Authorize)
 }

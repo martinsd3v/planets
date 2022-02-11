@@ -12,13 +12,9 @@ func SetupRoutes(Echo *echo.Echo) {
 	routes := Echo.Group("/users")
 	routes.POST("/auth", users.Auth())
 
-	//Private routes authentication is required
-	AuthMiddleware := auth.Auth{}
-	routes.Use(AuthMiddleware.Authorize)
-
-	routes.POST("", users.Create())
-	routes.GET("", users.Index())
-	routes.GET("/:UUID", users.Show())
-	routes.PATCH("/:UUID", users.Update())
-	routes.DELETE("/:UUID", users.Destroy())
+	routes.POST("", users.Create(), auth.Authorize)
+	routes.GET("", users.Index(), auth.Authorize)
+	routes.GET("/:UUID", users.Show(), auth.Authorize)
+	routes.PATCH("/:UUID", users.Update(), auth.Authorize)
+	routes.DELETE("/:UUID", users.Destroy(), auth.Authorize)
 }
