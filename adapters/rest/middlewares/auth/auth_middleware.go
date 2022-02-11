@@ -11,13 +11,10 @@ import (
 	"github.com/martinsd3v/planets/core/tools/providers/jwt"
 )
 
-//Auth ...
-type Auth struct{}
-
 //Authorize ...
-func (auth *Auth) Authorize(next echo.HandlerFunc) echo.HandlerFunc {
+func Authorize(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		token := auth.extractToken(c.Request())
+		token := extractToken(c.Request())
 		jwtProvider := jwt.New(viper.GetString("jwt.secretKey"))
 		_, err := jwtProvider.CheckToken(token)
 		if err != nil {
@@ -31,7 +28,7 @@ func (auth *Auth) Authorize(next echo.HandlerFunc) echo.HandlerFunc {
 }
 
 //get the token from the request body
-func (auth *Auth) extractToken(r *http.Request) string {
+func extractToken(r *http.Request) string {
 	bearToken := r.Header.Get("Authorization")
 	strArr := strings.Split(bearToken, " ")
 	if len(strArr) == 2 {

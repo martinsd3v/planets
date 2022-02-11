@@ -8,19 +8,13 @@ import (
 
 //SetupRoutes ...
 func SetupRoutes(Echo *echo.Echo) {
-	controller := users.Controller{}
-
 	//Public routes no authentication required
 	routes := Echo.Group("/users")
-	routes.POST("/auth", controller.Auth())
+	routes.POST("/auth", users.Auth())
 
-	//Private routes authentication is required
-	AuthMiddleware := auth.Auth{}
-	routes.Use(AuthMiddleware.Authorize)
-
-	routes.POST("", controller.Create())
-	routes.GET("", controller.Index())
-	routes.GET("/:UUID", controller.Show())
-	routes.PATCH("/:UUID", controller.Update())
-	routes.DELETE("/:UUID", controller.Destroy())
+	routes.POST("", users.Create(), auth.Authorize)
+	routes.GET("", users.Index(), auth.Authorize)
+	routes.GET("/:UUID", users.Show(), auth.Authorize)
+	routes.PATCH("/:UUID", users.Update(), auth.Authorize)
+	routes.DELETE("/:UUID", users.Destroy(), auth.Authorize)
 }

@@ -8,19 +8,12 @@ import (
 
 //SetupRoutes ...
 func SetupRoutes(Echo *echo.Echo) {
-	controller := planets.Controller{}
-
 	//Public routes no authentication required
 	routes := Echo.Group("/planets")
 
-	routes.GET("", controller.Index())
-	routes.GET("/:UUID", controller.Show())
-
-	//Private routes authentication is required
-	AuthMiddleware := auth.Auth{}
-	routes.Use(AuthMiddleware.Authorize)
-
-	routes.POST("", controller.Create())
-	routes.PATCH("/:UUID", controller.Update())
-	routes.DELETE("/:UUID", controller.Destroy())
+	routes.GET("/:UUID", planets.Show())
+	routes.GET("", planets.Index())
+	routes.POST("", planets.Create(), auth.Authorize)
+	routes.PATCH("/:UUID", planets.Update(), auth.Authorize)
+	routes.DELETE("/:UUID", planets.Destroy(), auth.Authorize)
 }
