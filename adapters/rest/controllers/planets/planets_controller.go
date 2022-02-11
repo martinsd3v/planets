@@ -1,34 +1,35 @@
 package planets
 
 import (
+	"context"
+
 	"github.com/labstack/echo/v4"
 	"github.com/martinsd3v/planets/adapters/persistence/mongodb/repositories/planets"
 	"github.com/martinsd3v/planets/adapters/rest/util"
+	"github.com/martinsd3v/planets/core/domains/planet/services"
 	"github.com/martinsd3v/planets/core/domains/planet/services/create"
-	"github.com/martinsd3v/planets/core/domains/planet/services/destroy"
-	"github.com/martinsd3v/planets/core/domains/planet/services/index"
-	"github.com/martinsd3v/planets/core/domains/planet/services/show"
 	"github.com/martinsd3v/planets/core/domains/planet/services/update"
 	client "github.com/martinsd3v/planets/core/tools/providers/http_client"
 	"github.com/martinsd3v/planets/core/tools/providers/logger"
 )
 
-//Controller ...
-type Controller struct{}
+func service(ctx context.Context) *services.Services {
+	mongoRepo := planets.Setup(ctx)
+
+	return services.New(services.Dependences{
+		Repository: mongoRepo,
+		Logger:     logger.New(),
+		HTTPClient: client.New(),
+	})
+}
 
 //Create ...
-func (ctrl *Controller) Create() echo.HandlerFunc {
+func Create() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		mongoRepo := planets.Setup(c.Request().Context())
-		service := create.Service{
-			Repository: mongoRepo,
-			Logger:     logger.New(),
-			HTTPClient: client.New(),
-		}
 		dto := create.Dto{}
-
 		util.Parser(c.Request(), &dto)
 
+		service := service(c.Request().Context()).Create
 		created, response := service.Execute(dto)
 		if created.UUID != "" {
 			response.Data = created.PublicPlanet()
@@ -40,20 +41,15 @@ func (ctrl *Controller) Create() echo.HandlerFunc {
 }
 
 //Index ...
-func (ctrl *Controller) Index() echo.HandlerFunc {
+func Index() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		mongoRepo := planets.Setup(c.Request().Context())
-		service := index.Service{
-			Repository: mongoRepo,
-			Logger:     logger.New(),
-		}
-
 		filters := map[string]interface{}{}
 		name := c.QueryParam("name")
 		if name != "" {
 			filters["name"] = name
 		}
 
+		service := service(c.Request().Context()).Index
 		result, response := service.Execute(&filters)
 		response.Data = result.PublicPlanets()
 
@@ -63,15 +59,11 @@ func (ctrl *Controller) Index() echo.HandlerFunc {
 }
 
 //Show ...
-func (ctrl *Controller) Show() echo.HandlerFunc {
+func Show() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		mongoRepo := planets.Setup(c.Request().Context())
-		service := show.Service{
-			Repository: mongoRepo,
-			Logger:     logger.New(),
-		}
-
 		uuid := c.Param("UUID")
+
+		service := service(c.Request().Context()).Show
 		result, response := service.Execute(uuid)
 
 		if result.UUID != "" {
@@ -84,18 +76,13 @@ func (ctrl *Controller) Show() echo.HandlerFunc {
 }
 
 //Update ...
-func (ctrl *Controller) Update() echo.HandlerFunc {
+func Update() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		mongoRepo := planets.Setup(c.Request().Context())
-		service := update.Service{
-			Repository: mongoRepo,
-			Logger:     logger.New(),
-			HTTPClient: client.New(),
-		}
 		dto := update.Dto{}
 		dto.UUID = c.Param("UUID")
 
 		util.Parser(c.Request(), &dto)
+		service := service(c.Request().Context()).Update
 		result, response := service.Execute(dto)
 		if result.UUID != "" {
 			response.Data = result.PublicPlanet()
@@ -107,15 +94,11 @@ func (ctrl *Controller) Update() echo.HandlerFunc {
 }
 
 //Destroy ...
-func (ctrl *Controller) Destroy() echo.HandlerFunc {
+func Destroy() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		mongoRepo := planets.Setup(c.Request().Context())
-		service := destroy.Service{
-			Repository: mongoRepo,
-			Logger:     logger.New(),
-		}
-
 		uuid := c.Param("UUID")
+
+		service := service(c.Request().Context()).Destroy
 		response := service.Execute(uuid)
 
 		c.JSON(response.Status, response)

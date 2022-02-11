@@ -1,14 +1,14 @@
 package users
 
 import (
+	"context"
+
 	"github.com/labstack/echo/v4"
 	"github.com/martinsd3v/planets/adapters/persistence/mongodb/repositories/users"
 	"github.com/martinsd3v/planets/adapters/rest/util"
+	"github.com/martinsd3v/planets/core/domains/user/services"
 	"github.com/martinsd3v/planets/core/domains/user/services/authenticate"
 	"github.com/martinsd3v/planets/core/domains/user/services/create"
-	"github.com/martinsd3v/planets/core/domains/user/services/destroy"
-	"github.com/martinsd3v/planets/core/domains/user/services/index"
-	"github.com/martinsd3v/planets/core/domains/user/services/show"
 	"github.com/martinsd3v/planets/core/domains/user/services/update"
 	"github.com/martinsd3v/planets/core/tools/providers/hash"
 	"github.com/martinsd3v/planets/core/tools/providers/jwt"
@@ -16,23 +16,25 @@ import (
 	"github.com/spf13/viper"
 )
 
-//Controller ...
-type Controller struct{}
+func service(ctx context.Context) *services.Services {
+	mongoRepo := users.Setup(ctx)
+
+	return services.New(services.Dependences{
+		Repository: mongoRepo,
+		Logger:     logger.New(),
+		Hash:       hash.New(),
+		Jwt:        jwt.New(viper.GetString("jwt.secretKey")),
+	})
+}
 
 //Auth ...
-func (ctrl *Controller) Auth() echo.HandlerFunc {
+func Auth() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		mongoRepo := users.Setup(c.Request().Context())
-		service := authenticate.Service{
-			Repository: mongoRepo,
-			Hash:       hash.New(),
-			Logger:     logger.New(),
-			Jwt:        jwt.New(viper.GetString("jwt.secretKey")),
-		}
 		dto := authenticate.Dto{}
 
 		util.Parser(c.Request(), &dto)
 
+		service := service(c.Request().Context()).Authenticate
 		token, response := service.Execute(dto)
 		if token != "" {
 			response.Data = token
@@ -44,18 +46,13 @@ func (ctrl *Controller) Auth() echo.HandlerFunc {
 }
 
 //Create ...
-func (ctrl *Controller) Create() echo.HandlerFunc {
+func Create() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		mongoRepo := users.Setup(c.Request().Context())
-		service := create.Service{
-			Repository: mongoRepo,
-			Hash:       hash.New(),
-			Logger:     logger.New(),
-		}
 		dto := create.Dto{}
 
 		util.Parser(c.Request(), &dto)
 
+		service := service(c.Request().Context()).Create
 		created, response := service.Execute(dto)
 		if created.UUID != "" {
 			response.Data = created.PublicUser()
@@ -67,14 +64,9 @@ func (ctrl *Controller) Create() echo.HandlerFunc {
 }
 
 //Index ...
-func (ctrl *Controller) Index() echo.HandlerFunc {
+func Index() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		mongoRepo := users.Setup(c.Request().Context())
-		service := index.Service{
-			Repository: mongoRepo,
-			Logger:     logger.New(),
-		}
-
+		service := service(c.Request().Context()).Index
 		result, response := service.Execute()
 		response.Data = result.PublicUsers()
 
@@ -84,15 +76,10 @@ func (ctrl *Controller) Index() echo.HandlerFunc {
 }
 
 //Show ...
-func (ctrl *Controller) Show() echo.HandlerFunc {
+func Show() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		mongoRepo := users.Setup(c.Request().Context())
-		service := show.Service{
-			Repository: mongoRepo,
-			Logger:     logger.New(),
-		}
-
 		uuid := c.Param("UUID")
+		service := service(c.Request().Context()).Show
 		result, response := service.Execute(uuid)
 
 		if result.UUID != "" {
@@ -105,18 +92,13 @@ func (ctrl *Controller) Show() echo.HandlerFunc {
 }
 
 //Update ...
-func (ctrl *Controller) Update() echo.HandlerFunc {
+func Update() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		mongoRepo := users.Setup(c.Request().Context())
-		service := update.Service{
-			Repository: mongoRepo,
-			Hash:       hash.New(),
-			Logger:     logger.New(),
-		}
 		dto := update.Dto{}
 		dto.UUID = c.Param("UUID")
-
 		util.Parser(c.Request(), &dto)
+
+		service := service(c.Request().Context()).Update
 		result, response := service.Execute(dto)
 		if result.UUID != "" {
 			response.Data = result.PublicUser()
@@ -128,15 +110,10 @@ func (ctrl *Controller) Update() echo.HandlerFunc {
 }
 
 //Destroy ...
-func (ctrl *Controller) Destroy() echo.HandlerFunc {
+func Destroy() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		mongoRepo := users.Setup(c.Request().Context())
-		service := destroy.Service{
-			Repository: mongoRepo,
-			Logger:     logger.New(),
-		}
-
 		uuid := c.Param("UUID")
+		service := service(c.Request().Context()).Destroy
 		response := service.Execute(uuid)
 
 		c.JSON(response.Status, response)
