@@ -12,6 +12,7 @@ import (
 
 	"github.com/martinsd3v/planets/adapters/rest/routers"
 	"github.com/martinsd3v/planets/core/tools/communication"
+	"github.com/martinsd3v/planets/core/tools/providers/cache"
 	"github.com/martinsd3v/planets/core/tools/providers/logger"
 )
 
@@ -32,6 +33,13 @@ func main() {
 	connection := mongodb.New(ctx)
 	if connection.Error != nil {
 		log.Error("Error connecting to database", connection.Error)
+		return
+	}
+
+	memcacheHost := viper.GetString("memcache.host") + ":" + viper.GetString("memcache.port")
+	_, err := cache.New(memcacheHost)
+	if err != nil {
+		log.Error("Error connecting to memcache", err)
 		return
 	}
 

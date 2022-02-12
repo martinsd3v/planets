@@ -1,10 +1,7 @@
 package create
 
 import (
-	"bytes"
 	"errors"
-	"io/ioutil"
-	"net/http"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -27,7 +24,7 @@ func TestService(t *testing.T) {
 		expectedData     entities.Planet
 		expectedResponse communication.Response
 		inputData        Dto
-		prepare          func(repostitoryMock *mocks.MockIPlanetRepository, loggerMock *mocks.MockILoggerProvider, clientMock *mocks.MockIHTTPClientProvider)
+		prepare          func(repostitoryMock *mocks.MockIPlanetRepository, loggerMock *mocks.MockILoggerProvider, cacheMock *mocks.MockICacheProvider)
 	}{
 		"success": {
 			expectedData: expectedData,
@@ -41,10 +38,9 @@ func TestService(t *testing.T) {
 				Terrain: "terrain",
 				Climate: "climate",
 			},
-			prepare: func(repostitoryMock *mocks.MockIPlanetRepository, loggerMock *mocks.MockILoggerProvider, clientMock *mocks.MockIHTTPClientProvider) {
+			prepare: func(repostitoryMock *mocks.MockIPlanetRepository, loggerMock *mocks.MockILoggerProvider, cacheMock *mocks.MockICacheProvider) {
 				repostitoryMock.EXPECT().All(gomock.Any()).Return(entities.Planets{}, nil)
-				bodyResponse := ioutil.NopCloser(bytes.NewReader([]byte(`{"results": [{"films": []}]}`)))
-				clientMock.EXPECT().Get(gomock.Any()).Times(1).Return(&http.Response{Body: bodyResponse}, nil)
+				cacheMock.EXPECT().Get(gomock.Any(), gomock.Any()).Return(nil)
 				repostitoryMock.EXPECT().Create(gomock.Any()).Times(1).Return(expectedData, nil)
 			},
 		},
@@ -59,7 +55,7 @@ func TestService(t *testing.T) {
 				Terrain: "terrain",
 				Climate: "climate",
 			},
-			prepare: func(repostitoryMock *mocks.MockIPlanetRepository, loggerMock *mocks.MockILoggerProvider, clientMock *mocks.MockIHTTPClientProvider) {
+			prepare: func(repostitoryMock *mocks.MockIPlanetRepository, loggerMock *mocks.MockILoggerProvider, cacheMock *mocks.MockICacheProvider) {
 				repostitoryMock.EXPECT().All(gomock.Any()).Return(entities.Planets{{UUID: "uuid"}}, errors.New("error"))
 				loggerMock.EXPECT().Info(gomock.Any(), gomock.Any())
 				loggerMock.EXPECT().Info(gomock.Any())
@@ -76,10 +72,9 @@ func TestService(t *testing.T) {
 				Terrain: "terrain",
 				Climate: "climate",
 			},
-			prepare: func(repostitoryMock *mocks.MockIPlanetRepository, loggerMock *mocks.MockILoggerProvider, clientMock *mocks.MockIHTTPClientProvider) {
+			prepare: func(repostitoryMock *mocks.MockIPlanetRepository, loggerMock *mocks.MockILoggerProvider, cacheMock *mocks.MockICacheProvider) {
 				repostitoryMock.EXPECT().All(gomock.Any()).Return(entities.Planets{}, nil)
-				bodyResponse := ioutil.NopCloser(bytes.NewReader([]byte(`{"results": [{"films": []}]}`)))
-				clientMock.EXPECT().Get(gomock.Any()).Times(1).Return(&http.Response{Body: bodyResponse}, nil)
+				cacheMock.EXPECT().Get(gomock.Any(), gomock.Any()).Return(nil)
 				repostitoryMock.EXPECT().Create(gomock.Any()).Times(1).Return(entities.Planet{}, errors.New("error"))
 				loggerMock.EXPECT().Error(gomock.Any(), gomock.Any())
 			},
@@ -94,12 +89,14 @@ func TestService(t *testing.T) {
 			repository := mocks.NewMockIPlanetRepository(ctrl)
 			logger := mocks.NewMockILoggerProvider(ctrl)
 			client := mocks.NewMockIHTTPClientProvider(ctrl)
-			useCase.prepare(repository, logger, client)
+			cache := mocks.NewMockICacheProvider(ctrl)
+			useCase.prepare(repository, logger, cache)
 
 			service := Service{
 				Repository: repository,
 				Logger:     logger,
 				HTTPClient: client,
+				Cache:      cache,
 			}
 			data, response := service.Execute(useCase.inputData)
 

@@ -33,6 +33,13 @@ services:
       sh -c "make run-seeds &&
              make run-api"
 
+  memcached:
+    image: bitnami/memcached:latest  
+    ports:
+      - "11211:11211"
+    networks:
+      - planets-network
+
 networks:
   planets-network:
     driver: bridge

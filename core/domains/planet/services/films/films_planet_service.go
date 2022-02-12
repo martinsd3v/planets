@@ -3,6 +3,7 @@ package films
 import (
 	"encoding/json"
 
+	"github.com/martinsd3v/planets/core/tools/providers/cache"
 	client "github.com/martinsd3v/planets/core/tools/providers/http_client"
 	"github.com/martinsd3v/planets/core/tools/providers/logger"
 )
@@ -11,6 +12,7 @@ import (
 type Service struct {
 	Logger     logger.ILoggerProvider
 	HTTPClient client.IHTTPClientProvider
+	Cache      cache.ICacheProvider
 }
 
 //ResponseAPI ...
@@ -25,6 +27,11 @@ type Result struct {
 
 //Execute service
 func (service *Service) Execute(planetName string) int {
+	var quantityCahe int
+	if service.Cache.Get(planetName, &quantityCahe) == nil {
+		return quantityCahe
+	}
+
 	apiBase := "https://swapi.dev/api/planets/?search="
 	response, err := service.HTTPClient.Get(apiBase + planetName)
 	if err != nil {
@@ -44,6 +51,9 @@ func (service *Service) Execute(planetName string) int {
 		for _, film := range films.Results {
 			quantity += len(film.Films)
 		}
+
+		service.Cache.Set(planetName, quantity)
+
 		return quantity
 	}
 
