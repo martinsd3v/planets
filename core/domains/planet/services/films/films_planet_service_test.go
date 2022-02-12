@@ -24,6 +24,7 @@ func TestService(t *testing.T) {
 				cacheMock.EXPECT().Get(gomock.Any(), gomock.Any()).Return(errors.New("error"))
 				bodyResponse := ioutil.NopCloser(bytes.NewReader([]byte(`{"results": [{"films": ["film1", "film2"]}]}`)))
 				clientMock.EXPECT().Get(gomock.Any()).Times(1).Return(&http.Response{Body: bodyResponse}, nil)
+				cacheMock.EXPECT().WithExpiration(gomock.Any()).Times(1).Return(cacheMock)
 				cacheMock.EXPECT().Set(gomock.Any(), gomock.Any()).Times(1)
 			},
 		},

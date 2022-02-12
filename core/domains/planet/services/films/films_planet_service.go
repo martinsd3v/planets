@@ -2,6 +2,7 @@ package films
 
 import (
 	"encoding/json"
+	"time"
 
 	"github.com/martinsd3v/planets/core/tools/providers/cache"
 	client "github.com/martinsd3v/planets/core/tools/providers/http_client"
@@ -52,7 +53,8 @@ func (service *Service) Execute(planetName string) int {
 			quantity += len(film.Films)
 		}
 
-		service.Cache.Set(planetName, quantity)
+		cacheExpireTime := time.Minute * 20
+		service.Cache.WithExpiration(cacheExpireTime).Set(planetName, quantity)
 
 		return quantity
 	}

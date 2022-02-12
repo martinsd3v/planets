@@ -35,7 +35,7 @@ func New(host string) (*MemCache, error) {
 var _ ICacheProvider = &MemCache{}
 
 func (cache *MemCache) WithExpiration(expiration time.Duration) ICacheProvider {
-	cache.Expiration = expiration
+	cache.Expiration = expiration / time.Second
 	return cache
 }
 
