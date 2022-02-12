@@ -28,9 +28,9 @@ type Result struct {
 
 //Execute service
 func (service *Service) Execute(planetName string) int {
-	var quantityCahe int
-	if service.Cache.Get(planetName, &quantityCahe) == nil {
-		return quantityCahe
+	var quantityFilms int
+	if service.Cache.Get(planetName, &quantityFilms) == nil {
+		return quantityFilms
 	}
 
 	apiBase := "https://swapi.dev/api/planets/?search="
@@ -48,16 +48,13 @@ func (service *Service) Execute(planetName string) int {
 	}
 
 	if len(films.Results) > 0 {
-		quantity := 0
 		for _, film := range films.Results {
-			quantity += len(film.Films)
+			quantityFilms += len(film.Films)
 		}
 
 		cacheExpireTime := time.Minute * 20
-		service.Cache.WithExpiration(cacheExpireTime).Set(planetName, quantity)
-
-		return quantity
+		service.Cache.WithExpiration(cacheExpireTime).Set(planetName, quantityFilms)
 	}
 
-	return 0
+	return quantityFilms
 }
