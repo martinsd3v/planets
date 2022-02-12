@@ -44,6 +44,7 @@ func TestService(t *testing.T) {
 			},
 			prepare: func(repostitoryMock *mocks.MockIPlanetRepository, loggerMock *mocks.MockILoggerProvider, clientMock *mocks.MockIHTTPClientProvider) {
 				repostitoryMock.EXPECT().FindByUUID(gomock.Any()).Return(expectedData, nil)
+				repostitoryMock.EXPECT().All(gomock.Any()).Return(entities.Planets{}, nil)
 				bodyResponse := ioutil.NopCloser(bytes.NewReader([]byte(`{"results": [{"films": []}]}`)))
 				clientMock.EXPECT().Get(gomock.Any()).Times(1).Return(&http.Response{Body: bodyResponse}, nil)
 				repostitoryMock.EXPECT().Save(gomock.Any()).Return(expectedData, nil)
@@ -73,10 +74,15 @@ func TestService(t *testing.T) {
 				Message: comm.Mapping["validate_failed"].Message,
 			},
 			inputData: Dto{
-				UUID: "uuid",
+				UUID:    "uuid",
+				Name:    "name",
+				Terrain: "terrain",
+				Climate: "climate",
 			},
 			prepare: func(repostitoryMock *mocks.MockIPlanetRepository, loggerMock *mocks.MockILoggerProvider, clientMock *mocks.MockIHTTPClientProvider) {
 				repostitoryMock.EXPECT().FindByUUID(gomock.Any()).Return(entities.Planet{}, nil)
+				repostitoryMock.EXPECT().All(gomock.Any()).Return(entities.Planets{{UUID: "uuid"}}, errors.New("error"))
+				loggerMock.EXPECT().Info(gomock.Any(), gomock.Any())
 				loggerMock.EXPECT().Info(gomock.Any())
 			},
 		},
@@ -94,6 +100,7 @@ func TestService(t *testing.T) {
 			},
 			prepare: func(repostitoryMock *mocks.MockIPlanetRepository, loggerMock *mocks.MockILoggerProvider, clientMock *mocks.MockIHTTPClientProvider) {
 				repostitoryMock.EXPECT().FindByUUID(gomock.Any()).Return(expectedData, nil)
+				repostitoryMock.EXPECT().All(gomock.Any()).Return(entities.Planets{}, nil)
 				bodyResponse := ioutil.NopCloser(bytes.NewReader([]byte(`{"results": [{"films": []}]}`)))
 				clientMock.EXPECT().Get(gomock.Any()).Times(1).Return(&http.Response{Body: bodyResponse}, nil)
 				repostitoryMock.EXPECT().Save(gomock.Any()).Return(entities.Planet{}, errors.New("error"))

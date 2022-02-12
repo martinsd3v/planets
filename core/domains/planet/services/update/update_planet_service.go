@@ -40,6 +40,17 @@ func (service *Service) Execute(dto Dto) (updated entities.Planet, response comm
 		return
 	}
 
+	filter := &map[string]interface{}{"name": dto.Name}
+	planets, err := service.Repository.All(filter)
+	if err != nil {
+		service.Logger.Info("domain.planet.service.update.update_planet_service.Repository.All", err)
+	}
+
+	//Check planet already exists
+	if len(planets) > 0 && planets[0].UUID != planet.UUID {
+		response.Fields = append(response.Fields, comm.Fields("name", "already_exists"))
+	}
+
 	if planet.UUID == "" {
 		response.Fields = append(response.Fields, comm.Fields("uuid", "validate_invalid"))
 	}

@@ -42,6 +42,7 @@ func TestService(t *testing.T) {
 				Climate: "climate",
 			},
 			prepare: func(repostitoryMock *mocks.MockIPlanetRepository, loggerMock *mocks.MockILoggerProvider, clientMock *mocks.MockIHTTPClientProvider) {
+				repostitoryMock.EXPECT().All(gomock.Any()).Return(entities.Planets{}, nil)
 				bodyResponse := ioutil.NopCloser(bytes.NewReader([]byte(`{"results": [{"films": []}]}`)))
 				clientMock.EXPECT().Get(gomock.Any()).Times(1).Return(&http.Response{Body: bodyResponse}, nil)
 				repostitoryMock.EXPECT().Create(gomock.Any()).Times(1).Return(expectedData, nil)
@@ -54,9 +55,13 @@ func TestService(t *testing.T) {
 				Message: comm.Mapping["validate_failed"].Message,
 			},
 			inputData: Dto{
-				Name: "name",
+				Name:    "name",
+				Terrain: "terrain",
+				Climate: "climate",
 			},
 			prepare: func(repostitoryMock *mocks.MockIPlanetRepository, loggerMock *mocks.MockILoggerProvider, clientMock *mocks.MockIHTTPClientProvider) {
+				repostitoryMock.EXPECT().All(gomock.Any()).Return(entities.Planets{{UUID: "uuid"}}, errors.New("error"))
+				loggerMock.EXPECT().Info(gomock.Any(), gomock.Any())
 				loggerMock.EXPECT().Info(gomock.Any())
 			},
 		},
@@ -72,6 +77,7 @@ func TestService(t *testing.T) {
 				Climate: "climate",
 			},
 			prepare: func(repostitoryMock *mocks.MockIPlanetRepository, loggerMock *mocks.MockILoggerProvider, clientMock *mocks.MockIHTTPClientProvider) {
+				repostitoryMock.EXPECT().All(gomock.Any()).Return(entities.Planets{}, nil)
 				bodyResponse := ioutil.NopCloser(bytes.NewReader([]byte(`{"results": [{"films": []}]}`)))
 				clientMock.EXPECT().Get(gomock.Any()).Times(1).Return(&http.Response{Body: bodyResponse}, nil)
 				repostitoryMock.EXPECT().Create(gomock.Any()).Times(1).Return(entities.Planet{}, errors.New("error"))

@@ -31,6 +31,17 @@ func (service *Service) Execute(dto Dto) (created entities.Planet, response comm
 	response.Fields = validations.ValidateStruct(&dto, "")
 	comm := communication.New()
 
+	filter := &map[string]interface{}{"name": dto.Name}
+	planets, err := service.Repository.All(filter)
+	if err != nil {
+		service.Logger.Info("domain.planet.service.create.create_planet_service.Repository.All", err)
+	}
+
+	//Check planet already exists
+	if len(planets) > 0 && planets[0].UUID != "" {
+		response.Fields = append(response.Fields, comm.Fields("name", "already_exists"))
+	}
+
 	if len(response.Fields) > 0 {
 		service.Logger.Info("domain.planet.service.create.create_planet_service.ValidationError")
 		resp := comm.Response(400, "validate_failed")
@@ -52,7 +63,7 @@ func (service *Service) Execute(dto Dto) (created entities.Planet, response comm
 	}
 	planet.Films = filmsService.Execute(planet.Name)
 
-	created, err := service.Repository.Create(*planet)
+	created, err = service.Repository.Create(*planet)
 
 	if err != nil {
 		service.Logger.Error("domain.planet.service.create.create_planet_service.Repository.Create", err)
