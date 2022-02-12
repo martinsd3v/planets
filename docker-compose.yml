@@ -25,6 +25,7 @@ services:
       - mongodb
     depends_on:
       - mongodb
+      - memcached
     environment:
       WAIT_HOSTS: mongodb:27017
     networks:
@@ -32,6 +33,13 @@ services:
     command: >
       sh -c "make run-seeds &&
              make run-api"
+
+  memcached:
+    image: bitnami/memcached:latest  
+    ports:
+      - "11211:11211"
+    networks:
+      - planets-network
 
 networks:
   planets-network:

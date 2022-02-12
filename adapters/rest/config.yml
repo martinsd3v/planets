@@ -8,3 +8,6 @@ jwt:
   secretKey: "7611488CD7E32F71934ADFF4982731113D5CA1A5D9BF34523F55A45EA8D2A758"
 web:
   port: "9090"
+memcache:
+  host: "127.0.0.1"
+  port: "11211"

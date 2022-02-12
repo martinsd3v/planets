@@ -14,6 +14,7 @@ run-seeds:
 mock:
 	rm -rf ./mocks
 
+	mockgen -source=./core/tools/providers/cache/cache_provider.go -destination=./mocks/cache_provider_mock.go -package=mocks	
 	mockgen -source=./core/tools/providers/hash/hash_provider.go -destination=./mocks/hash_provider_mock.go -package=mocks	
 	mockgen -source=./core/tools/providers/logger/logger_provider.go -destination=./mocks/logger_provider_mock.go -package=mocks	
 	mockgen -source=./core/tools/providers/http_client/http_client_provider.go -destination=./mocks/http_client_provider_mock.go -package=mocks	

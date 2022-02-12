@@ -7,6 +7,7 @@ import (
 	"github.com/martinsd3v/planets/core/domains/planet/repositories"
 	"github.com/martinsd3v/planets/core/domains/planet/services/films"
 	"github.com/martinsd3v/planets/core/tools/communication"
+	"github.com/martinsd3v/planets/core/tools/providers/cache"
 	client "github.com/martinsd3v/planets/core/tools/providers/http_client"
 	"github.com/martinsd3v/planets/core/tools/providers/logger"
 	"github.com/martinsd3v/planets/core/tools/validations"
@@ -25,6 +26,7 @@ type Service struct {
 	Repository repositories.IPlanetRepository
 	Logger     logger.ILoggerProvider
 	HTTPClient client.IHTTPClientProvider
+	Cache      cache.ICacheProvider
 }
 
 //Execute responsável por atualizar registros
@@ -70,6 +72,7 @@ func (service *Service) Execute(dto Dto) (updated entities.Planet, response comm
 	filmsService := films.Service{
 		Logger:     service.Logger,
 		HTTPClient: service.HTTPClient,
+		Cache:      service.Cache,
 	}
 	planet.Films = filmsService.Execute(planet.Name)
 

@@ -9,17 +9,22 @@ import (
 	"github.com/martinsd3v/planets/core/domains/planet/services"
 	"github.com/martinsd3v/planets/core/domains/planet/services/create"
 	"github.com/martinsd3v/planets/core/domains/planet/services/update"
+	"github.com/martinsd3v/planets/core/tools/providers/cache"
 	client "github.com/martinsd3v/planets/core/tools/providers/http_client"
 	"github.com/martinsd3v/planets/core/tools/providers/logger"
+	"github.com/spf13/viper"
 )
 
 func service(ctx context.Context) *services.Services {
 	mongoRepo := planets.Setup(ctx)
+	memcacheHost := viper.GetString("memcache.host") + ":" + viper.GetString("memcache.port")
+	memcache, _ := cache.New(memcacheHost)
 
 	return services.New(services.Dependences{
 		Repository: mongoRepo,
 		Logger:     logger.New(),
 		HTTPClient: client.New(),
+		Cache:      memcache,
 	})
 }
 
