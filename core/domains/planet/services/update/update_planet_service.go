@@ -1,6 +1,7 @@
 package update
 
 import (
+	"context"
 	"encoding/json"
 
 	"github.com/martinsd3v/planets/core/domains/planet/entities"
@@ -30,12 +31,12 @@ type Service struct {
 }
 
 //Execute responsável por atualizar registros
-func (service *Service) Execute(dto Dto) (updated entities.Planet, response communication.Response) {
+func (service *Service) Execute(ctx context.Context, dto Dto) (updated entities.Planet, response communication.Response) {
 	response.Fields = validations.ValidateStruct(&dto, "")
 	comm := communication.New()
 
 	//Check exists planet with this identifier
-	planet, err := service.Repository.FindByUUID(dto.UUID)
+	planet, err := service.Repository.FindByUUID(ctx, dto.UUID)
 	if err != nil {
 		service.Logger.Error("domain.planet.service.update.update_planet_service.Repository.FindByUUID", err)
 		response = comm.Response(500, "error_update")
@@ -43,7 +44,7 @@ func (service *Service) Execute(dto Dto) (updated entities.Planet, response comm
 	}
 
 	filter := &map[string]interface{}{"name": dto.Name}
-	planets, err := service.Repository.All(filter)
+	planets, err := service.Repository.All(ctx, filter)
 	if err != nil {
 		service.Logger.Info("domain.planet.service.update.update_planet_service.Repository.All", err)
 	}
@@ -74,9 +75,9 @@ func (service *Service) Execute(dto Dto) (updated entities.Planet, response comm
 		HTTPClient: service.HTTPClient,
 		Cache:      service.Cache,
 	}
-	planet.Films = filmsService.Execute(planet.Name)
+	planet.Films = filmsService.Execute(ctx, planet.Name)
 
-	updated, err = service.Repository.Save(planet)
+	updated, err = service.Repository.Save(ctx, planet)
 
 	if err != nil {
 		service.Logger.Error("domain.planet.service.update.update_planet_service.Repository.Save", err)

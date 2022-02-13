@@ -1,6 +1,7 @@
 package create
 
 import (
+	"context"
 	"errors"
 	"testing"
 
@@ -39,9 +40,9 @@ func TestService(t *testing.T) {
 				Climate: "climate",
 			},
 			prepare: func(repostitoryMock *mocks.MockIPlanetRepository, loggerMock *mocks.MockILoggerProvider, cacheMock *mocks.MockICacheProvider) {
-				repostitoryMock.EXPECT().All(gomock.Any()).Return(entities.Planets{}, nil)
+				repostitoryMock.EXPECT().All(gomock.Any(), gomock.Any()).Return(entities.Planets{}, nil)
 				cacheMock.EXPECT().Get(gomock.Any(), gomock.Any()).Return(nil)
-				repostitoryMock.EXPECT().Create(gomock.Any()).Times(1).Return(expectedData, nil)
+				repostitoryMock.EXPECT().Create(gomock.Any(), gomock.Any()).Times(1).Return(expectedData, nil)
 			},
 		},
 		"error: on validation": {
@@ -56,7 +57,7 @@ func TestService(t *testing.T) {
 				Climate: "climate",
 			},
 			prepare: func(repostitoryMock *mocks.MockIPlanetRepository, loggerMock *mocks.MockILoggerProvider, cacheMock *mocks.MockICacheProvider) {
-				repostitoryMock.EXPECT().All(gomock.Any()).Return(entities.Planets{{UUID: "uuid"}}, errors.New("error"))
+				repostitoryMock.EXPECT().All(gomock.Any(), gomock.Any()).Return(entities.Planets{{UUID: "uuid"}}, errors.New("error"))
 				loggerMock.EXPECT().Info(gomock.Any(), gomock.Any())
 				loggerMock.EXPECT().Info(gomock.Any())
 			},
@@ -73,9 +74,9 @@ func TestService(t *testing.T) {
 				Climate: "climate",
 			},
 			prepare: func(repostitoryMock *mocks.MockIPlanetRepository, loggerMock *mocks.MockILoggerProvider, cacheMock *mocks.MockICacheProvider) {
-				repostitoryMock.EXPECT().All(gomock.Any()).Return(entities.Planets{}, nil)
+				repostitoryMock.EXPECT().All(gomock.Any(), gomock.Any()).Return(entities.Planets{}, nil)
 				cacheMock.EXPECT().Get(gomock.Any(), gomock.Any()).Return(nil)
-				repostitoryMock.EXPECT().Create(gomock.Any()).Times(1).Return(entities.Planet{}, errors.New("error"))
+				repostitoryMock.EXPECT().Create(gomock.Any(), gomock.Any()).Times(1).Return(entities.Planet{}, errors.New("error"))
 				loggerMock.EXPECT().Error(gomock.Any(), gomock.Any())
 			},
 		},
@@ -84,6 +85,7 @@ func TestService(t *testing.T) {
 	for name, useCase := range useCases {
 		t.Run(name, func(t *testing.T) {
 			ctrl := gomock.NewController(t)
+			ctx := context.Background()
 			defer ctrl.Finish()
 
 			repository := mocks.NewMockIPlanetRepository(ctrl)
@@ -98,7 +100,7 @@ func TestService(t *testing.T) {
 				HTTPClient: client,
 				Cache:      cache,
 			}
-			data, response := service.Execute(useCase.inputData)
+			data, response := service.Execute(ctx, useCase.inputData)
 
 			if response.Status != useCase.expectedResponse.Status {
 				t.Errorf("Expected %d, but got %d", useCase.expectedResponse.Status, response.Status)

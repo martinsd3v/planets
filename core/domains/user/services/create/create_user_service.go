@@ -1,6 +1,7 @@
 package create
 
 import (
+	"context"
 	"encoding/json"
 
 	"github.com/martinsd3v/planets/core/domains/user/entities"
@@ -26,11 +27,11 @@ type Service struct {
 }
 
 //Execute Serviço responsável pela inserção de registros
-func (service *Service) Execute(dto Dto) (created entities.User, response communication.Response) {
+func (service *Service) Execute(ctx context.Context, dto Dto) (created entities.User, response communication.Response) {
 	response.Fields = validations.ValidateStruct(&dto, "")
 	comm := communication.New()
 
-	userFinderEmail, err := service.Repository.FindByEmail(dto.Email)
+	userFinderEmail, err := service.Repository.FindByEmail(ctx, dto.Email)
 	if err != nil {
 		service.Logger.Info("domain.user.service.create.create_user_service.Repository.FindByEmail", err)
 	}
@@ -58,7 +59,7 @@ func (service *Service) Execute(dto Dto) (created entities.User, response commun
 	toMerge, _ := json.Marshal(dto)
 	json.Unmarshal(toMerge, &user)
 
-	created, err = service.Repository.Create(*user)
+	created, err = service.Repository.Create(ctx, *user)
 
 	if err != nil {
 		service.Logger.Error("domain.user.service.create.create_user_service.Repository.Create", err)

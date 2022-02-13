@@ -1,6 +1,7 @@
 package films
 
 import (
+	"context"
 	"encoding/json"
 	"time"
 
@@ -27,7 +28,7 @@ type Result struct {
 }
 
 //Execute service
-func (service *Service) Execute(planetName string) int {
+func (service *Service) Execute(ctx context.Context, planetName string) int {
 	var quantityFilms int
 	if service.Cache.Get(planetName, &quantityFilms) == nil {
 		return quantityFilms

@@ -1,6 +1,7 @@
 package show
 
 import (
+	"context"
 	"errors"
 	"testing"
 
@@ -34,7 +35,7 @@ func TestService(t *testing.T) {
 				Message: comm.Mapping["success"].Message,
 			},
 			prepare: func(repostitoryMock *mocks.MockIUserRepository, loggerMock *mocks.MockILoggerProvider) {
-				repostitoryMock.EXPECT().FindByUUID(gomock.Any()).Return(expectedData, nil)
+				repostitoryMock.EXPECT().FindByUUID(gomock.Any(), gomock.Any()).Return(expectedData, nil)
 			},
 		},
 		"error: on repository": {
@@ -44,7 +45,7 @@ func TestService(t *testing.T) {
 				Message: comm.Mapping["error_list"].Message,
 			},
 			prepare: func(repostitoryMock *mocks.MockIUserRepository, loggerMock *mocks.MockILoggerProvider) {
-				repostitoryMock.EXPECT().FindByUUID(gomock.Any()).Return(entities.User{}, errors.New("error"))
+				repostitoryMock.EXPECT().FindByUUID(gomock.Any(), gomock.Any()).Return(entities.User{}, errors.New("error"))
 				loggerMock.EXPECT().Error(gomock.Any())
 			},
 		},
@@ -53,6 +54,7 @@ func TestService(t *testing.T) {
 	for name, useCase := range useCases {
 		t.Run(name, func(t *testing.T) {
 			ctrl := gomock.NewController(t)
+			ctx := context.Background()
 			defer ctrl.Finish()
 
 			repository := mocks.NewMockIUserRepository(ctrl)
@@ -63,7 +65,7 @@ func TestService(t *testing.T) {
 				Repository: repository,
 				Logger:     logger,
 			}
-			data, response := service.Execute(useCase.inputData)
+			data, response := service.Execute(ctx, useCase.inputData)
 
 			if response.Status != useCase.expectedResponse.Status {
 				t.Errorf("Expected %d, but got %d", useCase.expectedResponse.Status, response.Status)

@@ -2,6 +2,7 @@ package films
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"io/ioutil"
 	"net/http"
@@ -65,6 +66,7 @@ func TestService(t *testing.T) {
 	for name, useCase := range useCases {
 		t.Run(name, func(t *testing.T) {
 			ctrl := gomock.NewController(t)
+			ctx := context.Background()
 			defer ctrl.Finish()
 
 			logger := mocks.NewMockILoggerProvider(ctrl)
@@ -77,7 +79,7 @@ func TestService(t *testing.T) {
 				HTTPClient: client,
 				Cache:      cache,
 			}
-			data := service.Execute(useCase.inputData)
+			data := service.Execute(ctx, useCase.inputData)
 
 			if data != useCase.expectedData {
 				t.Errorf("Expected %d, but got %d", useCase.expectedData, data)

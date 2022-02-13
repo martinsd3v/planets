@@ -1,6 +1,7 @@
 package create
 
 import (
+	"context"
 	"encoding/json"
 
 	"github.com/martinsd3v/planets/core/domains/planet/entities"
@@ -29,12 +30,12 @@ type Service struct {
 }
 
 //Execute Serviço responsável pela inserção de registros
-func (service *Service) Execute(dto Dto) (created entities.Planet, response communication.Response) {
+func (service *Service) Execute(ctx context.Context, dto Dto) (created entities.Planet, response communication.Response) {
 	response.Fields = validations.ValidateStruct(&dto, "")
 	comm := communication.New()
 
 	filter := &map[string]interface{}{"name": dto.Name}
-	planets, err := service.Repository.All(filter)
+	planets, err := service.Repository.All(ctx, filter)
 	if err != nil {
 		service.Logger.Info("domain.planet.service.create.create_planet_service.Repository.All", err)
 	}
@@ -64,9 +65,9 @@ func (service *Service) Execute(dto Dto) (created entities.Planet, response comm
 		HTTPClient: service.HTTPClient,
 		Cache:      service.Cache,
 	}
-	planet.Films = filmsService.Execute(planet.Name)
+	planet.Films = filmsService.Execute(ctx, planet.Name)
 
-	created, err = service.Repository.Create(*planet)
+	created, err = service.Repository.Create(ctx, *planet)
 
 	if err != nil {
 		service.Logger.Error("domain.planet.service.create.create_planet_service.Repository.Create", err)

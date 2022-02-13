@@ -1,6 +1,8 @@
 package authenticate
 
 import (
+	"context"
+
 	"github.com/martinsd3v/planets/core/domains/user/repositories"
 	"github.com/martinsd3v/planets/core/tools/communication"
 	"github.com/martinsd3v/planets/core/tools/providers/hash"
@@ -24,7 +26,7 @@ type Service struct {
 }
 
 //Execute Serviço responsável pela inserção de registros
-func (service *Service) Execute(dto Dto) (token string, response communication.Response) {
+func (service *Service) Execute(ctx context.Context, dto Dto) (token string, response communication.Response) {
 	response.Fields = validations.ValidateStruct(&dto, "")
 	comm := communication.New()
 
@@ -36,7 +38,7 @@ func (service *Service) Execute(dto Dto) (token string, response communication.R
 		return
 	}
 
-	user, err := service.Repository.FindByEmail(dto.Email)
+	user, err := service.Repository.FindByEmail(ctx, dto.Email)
 	if err != nil {
 		service.Logger.Error("domain.user.service.authenticate.authenticate_user_service.Repository.FindByEmail", err)
 		response = comm.Response(400, "authenticate_failed")

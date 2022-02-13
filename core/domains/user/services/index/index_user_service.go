@@ -1,6 +1,8 @@
 package index
 
 import (
+	"context"
+
 	"github.com/martinsd3v/planets/core/domains/user/entities"
 	"github.com/martinsd3v/planets/core/domains/user/repositories"
 	"github.com/martinsd3v/planets/core/tools/communication"
@@ -14,8 +16,8 @@ type Service struct {
 }
 
 //Execute service responsible for find one register
-func (service *Service) Execute() (users entities.Users, response communication.Response) {
-	users, err := service.Repository.All()
+func (service *Service) Execute(ctx context.Context) (users entities.Users, response communication.Response) {
+	users, err := service.Repository.All(ctx)
 	comm := communication.New()
 
 	if err != nil {

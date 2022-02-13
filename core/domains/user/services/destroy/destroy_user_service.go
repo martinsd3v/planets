@@ -1,6 +1,8 @@
 package destroy
 
 import (
+	"context"
+
 	"github.com/martinsd3v/planets/core/domains/user/repositories"
 	"github.com/martinsd3v/planets/core/tools/communication"
 	"github.com/martinsd3v/planets/core/tools/providers/logger"
@@ -13,17 +15,17 @@ type Service struct {
 }
 
 //Execute responsible for deleting register
-func (service *Service) Execute(userUUID string) (response communication.Response) {
+func (service *Service) Execute(ctx context.Context, uuid string) (response communication.Response) {
 	comm := communication.New()
 
-	if userUUID == "" {
+	if uuid == "" {
 		response = comm.Response(400, "validate_failed")
 		response.Fields = append(response.Fields, comm.Fields("uuid", "validate_required"))
 		service.Logger.Info("domain.user.service.destroy.destroy_user_service.Validation")
 		return
 	}
 
-	user, err := service.Repository.FindByUUID(userUUID)
+	user, err := service.Repository.FindByUUID(ctx, uuid)
 	if err != nil {
 		service.Logger.Error("domain.user.service.destroy.destroy_user_service.Repository.FindByUUID", err)
 		response = comm.Response(500, "error_delete")
@@ -31,7 +33,7 @@ func (service *Service) Execute(userUUID string) (response communication.Respons
 	}
 
 	if user.UUID != "" {
-		err = service.Repository.Destroy(userUUID)
+		err = service.Repository.Destroy(ctx, uuid)
 		if err != nil {
 			service.Logger.Error("domain.user.service.destroy.destroy_user_service.Repository.Destroy", err)
 			response = comm.Response(500, "error_delete")

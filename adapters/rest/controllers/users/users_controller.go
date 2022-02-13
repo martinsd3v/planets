@@ -34,8 +34,9 @@ func Auth() echo.HandlerFunc {
 
 		util.Parser(c.Request(), &dto)
 
-		service := service(c.Request().Context()).Authenticate
-		token, response := service.Execute(dto)
+		ctx := c.Request().Context()
+		service := service(ctx).Authenticate
+		token, response := service.Execute(ctx, dto)
 		if token != "" {
 			response.Data = token
 		}
@@ -52,8 +53,9 @@ func Create() echo.HandlerFunc {
 
 		util.Parser(c.Request(), &dto)
 
-		service := service(c.Request().Context()).Create
-		created, response := service.Execute(dto)
+		ctx := c.Request().Context()
+		service := service(ctx).Create
+		created, response := service.Execute(ctx, dto)
 		if created.UUID != "" {
 			response.Data = created.PublicUser()
 		}
@@ -66,8 +68,9 @@ func Create() echo.HandlerFunc {
 //Index ...
 func Index() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		service := service(c.Request().Context()).Index
-		result, response := service.Execute()
+		ctx := c.Request().Context()
+		service := service(ctx).Index
+		result, response := service.Execute(ctx)
 		response.Data = result.PublicUsers()
 
 		c.JSON(response.Status, response)
@@ -79,8 +82,10 @@ func Index() echo.HandlerFunc {
 func Show() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		uuid := c.Param("UUID")
-		service := service(c.Request().Context()).Show
-		result, response := service.Execute(uuid)
+
+		ctx := c.Request().Context()
+		service := service(ctx).Show
+		result, response := service.Execute(ctx, uuid)
 
 		if result.UUID != "" {
 			response.Data = result.PublicUser()
@@ -98,8 +103,9 @@ func Update() echo.HandlerFunc {
 		dto.UUID = c.Param("UUID")
 		util.Parser(c.Request(), &dto)
 
-		service := service(c.Request().Context()).Update
-		result, response := service.Execute(dto)
+		ctx := c.Request().Context()
+		service := service(ctx).Update
+		result, response := service.Execute(ctx, dto)
 		if result.UUID != "" {
 			response.Data = result.PublicUser()
 		}
@@ -113,8 +119,10 @@ func Update() echo.HandlerFunc {
 func Destroy() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		uuid := c.Param("UUID")
-		service := service(c.Request().Context()).Destroy
-		response := service.Execute(uuid)
+
+		ctx := c.Request().Context()
+		service := service(ctx).Destroy
+		response := service.Execute(ctx, uuid)
 
 		c.JSON(response.Status, response)
 		return nil
