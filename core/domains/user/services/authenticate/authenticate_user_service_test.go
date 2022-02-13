@@ -1,6 +1,7 @@
 package authenticate
 
 import (
+	"context"
 	"errors"
 	"testing"
 
@@ -32,7 +33,7 @@ func TestService(t *testing.T) {
 				Password: "userPassword123",
 			},
 			prepare: func(repostitoryMock *mocks.MockIUserRepository, hashMock *mocks.MockIHashProvider, jwtMock *mocks.MockIJwtProvider, loggerMock *mocks.MockILoggerProvider) {
-				repostitoryMock.EXPECT().FindByEmail(gomock.Any()).Return(entities.User{UUID: "uuid"}, nil)
+				repostitoryMock.EXPECT().FindByEmail(gomock.Any(), gomock.Any()).Return(entities.User{UUID: "uuid"}, nil)
 				hashMock.EXPECT().Compare(gomock.Any(), gomock.Any()).Return(true)
 				jwtMock.EXPECT().CreateToken(gomock.Any()).Return(&jwt.TokenDetails{AccessToken: "token"}, nil)
 			},
@@ -59,7 +60,7 @@ func TestService(t *testing.T) {
 				Password: "userPassword123",
 			},
 			prepare: func(repostitoryMock *mocks.MockIUserRepository, hashMock *mocks.MockIHashProvider, jwtMock *mocks.MockIJwtProvider, loggerMock *mocks.MockILoggerProvider) {
-				repostitoryMock.EXPECT().FindByEmail(gomock.Any()).Return(entities.User{}, errors.New("error"))
+				repostitoryMock.EXPECT().FindByEmail(gomock.Any(), gomock.Any()).Return(entities.User{}, errors.New("error"))
 				loggerMock.EXPECT().Error(gomock.Any())
 			},
 		},
@@ -75,7 +76,7 @@ func TestService(t *testing.T) {
 				Password: "userPassword123",
 			},
 			prepare: func(repostitoryMock *mocks.MockIUserRepository, hashMock *mocks.MockIHashProvider, jwtMock *mocks.MockIJwtProvider, loggerMock *mocks.MockILoggerProvider) {
-				repostitoryMock.EXPECT().FindByEmail(gomock.Any()).Return(entities.User{UUID: "uuid"}, nil)
+				repostitoryMock.EXPECT().FindByEmail(gomock.Any(), gomock.Any()).Return(entities.User{UUID: "uuid"}, nil)
 				hashMock.EXPECT().Compare(gomock.Any(), gomock.Any()).Return(true)
 				jwtMock.EXPECT().CreateToken(gomock.Any()).Return(nil, errors.New("error"))
 				loggerMock.EXPECT().Error(gomock.Any())
@@ -93,7 +94,7 @@ func TestService(t *testing.T) {
 				Password: "userPassword123",
 			},
 			prepare: func(repostitoryMock *mocks.MockIUserRepository, hashMock *mocks.MockIHashProvider, jwtMock *mocks.MockIJwtProvider, loggerMock *mocks.MockILoggerProvider) {
-				repostitoryMock.EXPECT().FindByEmail(gomock.Any()).Return(entities.User{UUID: ""}, nil)
+				repostitoryMock.EXPECT().FindByEmail(gomock.Any(), gomock.Any()).Return(entities.User{UUID: ""}, nil)
 			},
 		},
 	}
@@ -101,6 +102,7 @@ func TestService(t *testing.T) {
 	for name, useCase := range useCases {
 		t.Run(name, func(t *testing.T) {
 			ctrl := gomock.NewController(t)
+			ctx := context.Background()
 			defer ctrl.Finish()
 
 			repository := mocks.NewMockIUserRepository(ctrl)
@@ -115,7 +117,7 @@ func TestService(t *testing.T) {
 				Jwt:        jwt,
 				Logger:     logger,
 			}
-			data, response := service.Execute(useCase.inputData)
+			data, response := service.Execute(ctx, useCase.inputData)
 
 			if response.Status != useCase.expectedResponse.Status {
 				t.Errorf("Expected %d, but got %d", useCase.expectedResponse.Status, response.Status)

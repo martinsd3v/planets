@@ -1,6 +1,7 @@
 package update
 
 import (
+	"context"
 	"encoding/json"
 
 	"github.com/martinsd3v/planets/core/domains/user/entities"
@@ -27,12 +28,12 @@ type Service struct {
 }
 
 //Execute responsável por atualizar registros
-func (service *Service) Execute(dto Dto) (updated entities.User, response communication.Response) {
+func (service *Service) Execute(ctx context.Context, dto Dto) (updated entities.User, response communication.Response) {
 	response.Fields = validations.ValidateStruct(&dto, "")
 	comm := communication.New()
 
 	//Check e-mail in use
-	userFinderEmail, err := service.Repository.FindByEmail(dto.Email)
+	userFinderEmail, err := service.Repository.FindByEmail(ctx, dto.Email)
 	if err != nil {
 		service.Logger.Info("domain.user.service.update.update_user_service.Repository.FindByEmail", err)
 	}
@@ -42,7 +43,7 @@ func (service *Service) Execute(dto Dto) (updated entities.User, response commun
 	}
 
 	//Check exists user with this identifier
-	userFinderUUID, err := service.Repository.FindByUUID(dto.UUID)
+	userFinderUUID, err := service.Repository.FindByUUID(ctx, dto.UUID)
 	if err != nil {
 		service.Logger.Error("domain.user.service.update.update_user_service.Repository.FindByUUID", err)
 		response = comm.Response(500, "error_update")
@@ -72,7 +73,7 @@ func (service *Service) Execute(dto Dto) (updated entities.User, response commun
 	toMerge, _ := json.Marshal(dto)
 	json.Unmarshal(toMerge, &userFinderUUID)
 
-	updated, err = service.Repository.Save(userFinderUUID)
+	updated, err = service.Repository.Save(ctx, userFinderUUID)
 
 	if err != nil {
 		service.Logger.Error("domain.user.service.update.update_user_service.Repository.Save", err)

@@ -1,6 +1,8 @@
 package show
 
 import (
+	"context"
+
 	"github.com/martinsd3v/planets/core/domains/user/entities"
 	"github.com/martinsd3v/planets/core/domains/user/repositories"
 	"github.com/martinsd3v/planets/core/tools/communication"
@@ -14,8 +16,8 @@ type Service struct {
 }
 
 //Execute service responsible for find one register
-func (service *Service) Execute(userUUID string) (user entities.User, response communication.Response) {
-	user, err := service.Repository.FindByUUID(userUUID)
+func (service *Service) Execute(ctx context.Context, uuid string) (user entities.User, response communication.Response) {
+	user, err := service.Repository.FindByUUID(ctx, uuid)
 	comm := communication.New()
 
 	if err != nil {

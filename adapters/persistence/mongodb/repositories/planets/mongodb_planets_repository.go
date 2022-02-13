@@ -14,7 +14,6 @@ import (
 
 //Repository based on planet repository from core
 type Repository struct {
-	Context    context.Context
 	Collection *mongo.Collection
 }
 
@@ -26,20 +25,19 @@ func Setup(ctx context.Context) *Repository {
 	conn := mongodb.New(ctx)
 	return &Repository{
 		Collection: conn.MongoDB.Collection("planets"),
-		Context:    ctx,
 	}
 }
 
 //All return all planets
-func (repo *Repository) All(filters *map[string]interface{}) (entities.Planets, error) {
+func (repo *Repository) All(ctx context.Context, filters *map[string]interface{}) (entities.Planets, error) {
 	var data entities.Planets
 
-	cursor, err := repo.Collection.Find(repo.Context, filters)
+	cursor, err := repo.Collection.Find(ctx, filters)
 	if err != nil {
 		return data, err
 	}
 
-	for cursor.Next(repo.Context) {
+	for cursor.Next(ctx) {
 		row := entities.Planet{}
 		cursor.Decode(&row)
 		data = append(data, row)
@@ -49,18 +47,18 @@ func (repo *Repository) All(filters *map[string]interface{}) (entities.Planets, 
 }
 
 //Create insert planet in DB
-func (repo *Repository) Create(data entities.Planet) (entities.Planet, error) {
-	_, err := repo.Collection.InsertOne(repo.Context, data)
+func (repo *Repository) Create(ctx context.Context, data entities.Planet) (entities.Planet, error) {
+	_, err := repo.Collection.InsertOne(ctx, data)
 	if err != nil {
 		return entities.Planet{}, err
 	}
-	return repo.FindByUUID(data.UUID)
+	return repo.FindByUUID(ctx, data.UUID)
 }
 
 //FindByUUID find planet by uuid
-func (repo *Repository) FindByUUID(uuid string) (entities.Planet, error) {
+func (repo *Repository) FindByUUID(ctx context.Context, uuid string) (entities.Planet, error) {
 	var data entities.Planet
-	err := repo.Collection.FindOne(repo.Context, bson.M{"_id": uuid}).Decode(&data)
+	err := repo.Collection.FindOne(ctx, bson.M{"_id": uuid}).Decode(&data)
 	if err != nil {
 		return data, err
 	}
@@ -68,8 +66,8 @@ func (repo *Repository) FindByUUID(uuid string) (entities.Planet, error) {
 }
 
 //Destroy delete planet by uuid
-func (repo *Repository) Destroy(uuid string) error {
-	_, err := repo.Collection.DeleteOne(repo.Context, bson.M{"_id": uuid})
+func (repo *Repository) Destroy(ctx context.Context, uuid string) error {
+	_, err := repo.Collection.DeleteOne(ctx, bson.M{"_id": uuid})
 	if err != nil {
 		return err
 	}
@@ -77,7 +75,7 @@ func (repo *Repository) Destroy(uuid string) error {
 }
 
 //Save update planet
-func (repo *Repository) Save(data entities.Planet) (entities.Planet, error) {
+func (repo *Repository) Save(ctx context.Context, data entities.Planet) (entities.Planet, error) {
 	now := time.Now()
 	data.UpdatedAt = &now
 
@@ -87,12 +85,12 @@ func (repo *Repository) Save(data entities.Planet) (entities.Planet, error) {
 	}
 
 	_, err = repo.Collection.UpdateOne(
-		repo.Context,
+		ctx,
 		bson.M{"_id": data.UUID},
 		primitiveD,
 	)
 	if err != nil {
 		return entities.Planet{}, err
 	}
-	return repo.FindByUUID(data.UUID)
+	return repo.FindByUUID(ctx, data.UUID)
 }

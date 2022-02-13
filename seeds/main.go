@@ -43,5 +43,5 @@ func seedUser(ctx context.Context) {
 		Password: "123456",
 		Name:     "User Test Seed",
 	}
-	service.Execute(dto)
+	service.Execute(ctx, dto)
 }

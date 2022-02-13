@@ -34,8 +34,9 @@ func Create() echo.HandlerFunc {
 		dto := create.Dto{}
 		util.Parser(c.Request(), &dto)
 
-		service := service(c.Request().Context()).Create
-		created, response := service.Execute(dto)
+		ctx := c.Request().Context()
+		service := service(ctx).Create
+		created, response := service.Execute(ctx, dto)
 		if created.UUID != "" {
 			response.Data = created.PublicPlanet()
 		}
@@ -54,8 +55,9 @@ func Index() echo.HandlerFunc {
 			filters["name"] = name
 		}
 
-		service := service(c.Request().Context()).Index
-		result, response := service.Execute(&filters)
+		ctx := c.Request().Context()
+		service := service(ctx).Index
+		result, response := service.Execute(ctx, &filters)
 		response.Data = result.PublicPlanets()
 
 		c.JSON(response.Status, response)
@@ -68,8 +70,9 @@ func Show() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		uuid := c.Param("UUID")
 
-		service := service(c.Request().Context()).Show
-		result, response := service.Execute(uuid)
+		ctx := c.Request().Context()
+		service := service(ctx).Show
+		result, response := service.Execute(ctx, uuid)
 
 		if result.UUID != "" {
 			response.Data = result.PublicPlanet()
@@ -85,10 +88,11 @@ func Update() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		dto := update.Dto{}
 		dto.UUID = c.Param("UUID")
-
 		util.Parser(c.Request(), &dto)
-		service := service(c.Request().Context()).Update
-		result, response := service.Execute(dto)
+
+		ctx := c.Request().Context()
+		service := service(ctx).Update
+		result, response := service.Execute(ctx, dto)
 		if result.UUID != "" {
 			response.Data = result.PublicPlanet()
 		}
@@ -103,8 +107,9 @@ func Destroy() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		uuid := c.Param("UUID")
 
-		service := service(c.Request().Context()).Destroy
-		response := service.Execute(uuid)
+		ctx := c.Request().Context()
+		service := service(ctx).Destroy
+		response := service.Execute(ctx, uuid)
 
 		c.JSON(response.Status, response)
 		return nil

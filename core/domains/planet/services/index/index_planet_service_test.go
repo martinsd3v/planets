@@ -1,6 +1,7 @@
 package index
 
 import (
+	"context"
 	"errors"
 	"testing"
 
@@ -33,7 +34,7 @@ func TestService(t *testing.T) {
 				Message: comm.Mapping["success"].Message,
 			},
 			prepare: func(repostitoryMock *mocks.MockIPlanetRepository, loggerMock *mocks.MockILoggerProvider) {
-				repostitoryMock.EXPECT().All(gomock.Any()).Return(expectedData, nil)
+				repostitoryMock.EXPECT().All(gomock.Any(), gomock.Any()).Return(expectedData, nil)
 			},
 		},
 		"error: on repository": {
@@ -43,7 +44,7 @@ func TestService(t *testing.T) {
 				Message: comm.Mapping["error_list"].Message,
 			},
 			prepare: func(repostitoryMock *mocks.MockIPlanetRepository, loggerMock *mocks.MockILoggerProvider) {
-				repostitoryMock.EXPECT().All(gomock.Any()).Return(entities.Planets{}, errors.New("error"))
+				repostitoryMock.EXPECT().All(gomock.Any(), gomock.Any()).Return(entities.Planets{}, errors.New("error"))
 				loggerMock.EXPECT().Error(gomock.Any())
 			},
 		},
@@ -52,6 +53,7 @@ func TestService(t *testing.T) {
 	for name, useCase := range useCases {
 		t.Run(name, func(t *testing.T) {
 			ctrl := gomock.NewController(t)
+			ctx := context.Background()
 			defer ctrl.Finish()
 
 			repository := mocks.NewMockIPlanetRepository(ctrl)
@@ -62,7 +64,7 @@ func TestService(t *testing.T) {
 				Repository: repository,
 				Logger:     logger,
 			}
-			data, response := service.Execute(nil)
+			data, response := service.Execute(ctx, nil)
 
 			if response.Status != useCase.expectedResponse.Status {
 				t.Errorf("Expected %d, but got %d", useCase.expectedResponse.Status, response.Status)

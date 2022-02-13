@@ -5,6 +5,7 @@
 package mocks
 
 import (
+	context "context"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
@@ -35,75 +36,75 @@ func (m *MockIPlanetRepository) EXPECT() *MockIPlanetRepositoryMockRecorder {
 }
 
 // All mocks base method.
-func (m *MockIPlanetRepository) All(filters *map[string]interface{}) (entities.Planets, error) {
+func (m *MockIPlanetRepository) All(ctx context.Context, filters *map[string]interface{}) (entities.Planets, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "All", filters)
+	ret := m.ctrl.Call(m, "All", ctx, filters)
 	ret0, _ := ret[0].(entities.Planets)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // All indicates an expected call of All.
-func (mr *MockIPlanetRepositoryMockRecorder) All(filters interface{}) *gomock.Call {
+func (mr *MockIPlanetRepositoryMockRecorder) All(ctx, filters interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "All", reflect.TypeOf((*MockIPlanetRepository)(nil).All), filters)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "All", reflect.TypeOf((*MockIPlanetRepository)(nil).All), ctx, filters)
 }
 
 // Create mocks base method.
-func (m *MockIPlanetRepository) Create(arg0 entities.Planet) (entities.Planet, error) {
+func (m *MockIPlanetRepository) Create(ctx context.Context, data entities.Planet) (entities.Planet, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", arg0)
+	ret := m.ctrl.Call(m, "Create", ctx, data)
 	ret0, _ := ret[0].(entities.Planet)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Create indicates an expected call of Create.
-func (mr *MockIPlanetRepositoryMockRecorder) Create(arg0 interface{}) *gomock.Call {
+func (mr *MockIPlanetRepositoryMockRecorder) Create(ctx, data interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockIPlanetRepository)(nil).Create), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockIPlanetRepository)(nil).Create), ctx, data)
 }
 
 // Destroy mocks base method.
-func (m *MockIPlanetRepository) Destroy(uuid string) error {
+func (m *MockIPlanetRepository) Destroy(ctx context.Context, uuid string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Destroy", uuid)
+	ret := m.ctrl.Call(m, "Destroy", ctx, uuid)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Destroy indicates an expected call of Destroy.
-func (mr *MockIPlanetRepositoryMockRecorder) Destroy(uuid interface{}) *gomock.Call {
+func (mr *MockIPlanetRepositoryMockRecorder) Destroy(ctx, uuid interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Destroy", reflect.TypeOf((*MockIPlanetRepository)(nil).Destroy), uuid)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Destroy", reflect.TypeOf((*MockIPlanetRepository)(nil).Destroy), ctx, uuid)
 }
 
 // FindByUUID mocks base method.
-func (m *MockIPlanetRepository) FindByUUID(arg0 string) (entities.Planet, error) {
+func (m *MockIPlanetRepository) FindByUUID(ctx context.Context, uuid string) (entities.Planet, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindByUUID", arg0)
+	ret := m.ctrl.Call(m, "FindByUUID", ctx, uuid)
 	ret0, _ := ret[0].(entities.Planet)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // FindByUUID indicates an expected call of FindByUUID.
-func (mr *MockIPlanetRepositoryMockRecorder) FindByUUID(arg0 interface{}) *gomock.Call {
+func (mr *MockIPlanetRepositoryMockRecorder) FindByUUID(ctx, uuid interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByUUID", reflect.TypeOf((*MockIPlanetRepository)(nil).FindByUUID), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByUUID", reflect.TypeOf((*MockIPlanetRepository)(nil).FindByUUID), ctx, uuid)
 }
 
 // Save mocks base method.
-func (m *MockIPlanetRepository) Save(arg0 entities.Planet) (entities.Planet, error) {
+func (m *MockIPlanetRepository) Save(ctx context.Context, data entities.Planet) (entities.Planet, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Save", arg0)
+	ret := m.ctrl.Call(m, "Save", ctx, data)
 	ret0, _ := ret[0].(entities.Planet)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Save indicates an expected call of Save.
-func (mr *MockIPlanetRepositoryMockRecorder) Save(arg0 interface{}) *gomock.Call {
+func (mr *MockIPlanetRepositoryMockRecorder) Save(ctx, data interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Save", reflect.TypeOf((*MockIPlanetRepository)(nil).Save), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Save", reflect.TypeOf((*MockIPlanetRepository)(nil).Save), ctx, data)
 }

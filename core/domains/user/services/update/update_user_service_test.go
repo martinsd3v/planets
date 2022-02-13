@@ -1,6 +1,7 @@
 package update
 
 import (
+	"context"
 	"errors"
 	"testing"
 
@@ -38,9 +39,9 @@ func TestService(t *testing.T) {
 				Message: comm.Mapping["success"].Message,
 			},
 			prepare: func(repostitoryMock *mocks.MockIUserRepository, hashMock *mocks.MockIHashProvider, loggerMock *mocks.MockILoggerProvider) {
-				repostitoryMock.EXPECT().FindByEmail(gomock.Any()).Return(expectedData, nil)
-				repostitoryMock.EXPECT().FindByUUID(gomock.Any()).Return(expectedData, nil)
-				repostitoryMock.EXPECT().Save(gomock.Any()).Return(expectedData, nil)
+				repostitoryMock.EXPECT().FindByEmail(gomock.Any(), gomock.Any()).Return(expectedData, nil)
+				repostitoryMock.EXPECT().FindByUUID(gomock.Any(), gomock.Any()).Return(expectedData, nil)
+				repostitoryMock.EXPECT().Save(gomock.Any(), gomock.Any()).Return(expectedData, nil)
 			},
 		},
 		"error: on repository FindByEmail": {
@@ -55,9 +56,9 @@ func TestService(t *testing.T) {
 				Password: "userPassword123",
 			},
 			prepare: func(repostitoryMock *mocks.MockIUserRepository, hashMock *mocks.MockIHashProvider, loggerMock *mocks.MockILoggerProvider) {
-				repostitoryMock.EXPECT().FindByEmail(gomock.Any()).Return(entities.User{}, errors.New("error"))
+				repostitoryMock.EXPECT().FindByEmail(gomock.Any(), gomock.Any()).Return(entities.User{}, errors.New("error"))
 				loggerMock.EXPECT().Info(gomock.Any(), gomock.Any())
-				repostitoryMock.EXPECT().FindByUUID(gomock.Any()).Return(entities.User{}, errors.New("error"))
+				repostitoryMock.EXPECT().FindByUUID(gomock.Any(), gomock.Any()).Return(entities.User{}, errors.New("error"))
 				loggerMock.EXPECT().Error(gomock.Any(), gomock.Any())
 			},
 		},
@@ -73,8 +74,8 @@ func TestService(t *testing.T) {
 				Password: "userPassword123",
 			},
 			prepare: func(repostitoryMock *mocks.MockIUserRepository, hashMock *mocks.MockIHashProvider, loggerMock *mocks.MockILoggerProvider) {
-				repostitoryMock.EXPECT().FindByEmail(gomock.Any()).Return(expectedData, nil)
-				repostitoryMock.EXPECT().FindByUUID(gomock.Any()).Return(entities.User{}, errors.New("error"))
+				repostitoryMock.EXPECT().FindByEmail(gomock.Any(), gomock.Any()).Return(expectedData, nil)
+				repostitoryMock.EXPECT().FindByUUID(gomock.Any(), gomock.Any()).Return(entities.User{}, errors.New("error"))
 				loggerMock.EXPECT().Error(gomock.Any(), gomock.Any())
 			},
 		},
@@ -90,8 +91,8 @@ func TestService(t *testing.T) {
 				Password: "userPassword123",
 			},
 			prepare: func(repostitoryMock *mocks.MockIUserRepository, hashMock *mocks.MockIHashProvider, loggerMock *mocks.MockILoggerProvider) {
-				repostitoryMock.EXPECT().FindByEmail(gomock.Any()).Return(expectedData, nil)
-				repostitoryMock.EXPECT().FindByUUID(gomock.Any()).Return(entities.User{}, nil)
+				repostitoryMock.EXPECT().FindByEmail(gomock.Any(), gomock.Any()).Return(expectedData, nil)
+				repostitoryMock.EXPECT().FindByUUID(gomock.Any(), gomock.Any()).Return(entities.User{}, nil)
 				loggerMock.EXPECT().Info(gomock.Any())
 			},
 		},
@@ -108,10 +109,10 @@ func TestService(t *testing.T) {
 				Password: "userPassword123",
 			},
 			prepare: func(repostitoryMock *mocks.MockIUserRepository, hashMock *mocks.MockIHashProvider, loggerMock *mocks.MockILoggerProvider) {
-				repostitoryMock.EXPECT().FindByEmail(gomock.Any()).Return(expectedData, nil)
-				repostitoryMock.EXPECT().FindByUUID(gomock.Any()).Return(expectedData, nil)
+				repostitoryMock.EXPECT().FindByEmail(gomock.Any(), gomock.Any()).Return(expectedData, nil)
+				repostitoryMock.EXPECT().FindByUUID(gomock.Any(), gomock.Any()).Return(expectedData, nil)
 				hashMock.EXPECT().Create(gomock.Any()).Return("hash")
-				repostitoryMock.EXPECT().Save(gomock.Any()).Return(entities.User{}, errors.New("error"))
+				repostitoryMock.EXPECT().Save(gomock.Any(), gomock.Any()).Return(entities.User{}, errors.New("error"))
 				loggerMock.EXPECT().Error(gomock.Any(), gomock.Any())
 			},
 		},
@@ -120,6 +121,7 @@ func TestService(t *testing.T) {
 	for name, useCase := range useCases {
 		t.Run(name, func(t *testing.T) {
 			ctrl := gomock.NewController(t)
+			ctx := context.Background()
 			defer ctrl.Finish()
 
 			repository := mocks.NewMockIUserRepository(ctrl)
@@ -132,7 +134,7 @@ func TestService(t *testing.T) {
 				Hash:       hash,
 				Logger:     logger,
 			}
-			data, response := service.Execute(useCase.inputData)
+			data, response := service.Execute(ctx, useCase.inputData)
 
 			if response.Status != useCase.expectedResponse.Status {
 				t.Errorf("Expected %d, but got %d", useCase.expectedResponse.Status, response.Status)
