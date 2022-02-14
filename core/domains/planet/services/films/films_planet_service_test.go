@@ -31,9 +31,9 @@ func TestService(t *testing.T) {
 		},
 		"success: from cache": {
 			inputData:    "planetName",
-			expectedData: 2,
+			expectedData: 6,
 			prepare: func(loggerMock *mocks.MockILoggerProvider, clientMock *mocks.MockIHTTPClientProvider, cacheMock *mocks.MockICacheProvider) {
-				cacheMock.EXPECT().Get(gomock.Any(), gomock.Any(), gomock.Any()).SetArg(1, 2).Return(nil)
+				cacheMock.EXPECT().Get(gomock.Any(), gomock.Any(), gomock.Any()).Times(1).SetArg(2, 6).Return(nil)
 			},
 		},
 		"error: on Client Request": {

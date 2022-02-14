@@ -79,6 +79,21 @@ func (mr *MockIPlanetRepositoryMockRecorder) Destroy(ctx, uuid interface{}) *gom
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Destroy", reflect.TypeOf((*MockIPlanetRepository)(nil).Destroy), ctx, uuid)
 }
 
+// FindByName mocks base method.
+func (m *MockIPlanetRepository) FindByName(ctx context.Context, name string) (entities.Planet, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindByName", ctx, name)
+	ret0, _ := ret[0].(entities.Planet)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindByName indicates an expected call of FindByName.
+func (mr *MockIPlanetRepositoryMockRecorder) FindByName(ctx, name interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByName", reflect.TypeOf((*MockIPlanetRepository)(nil).FindByName), ctx, name)
+}
+
 // FindByUUID mocks base method.
 func (m *MockIPlanetRepository) FindByUUID(ctx context.Context, uuid string) (entities.Planet, error) {
 	m.ctrl.T.Helper()

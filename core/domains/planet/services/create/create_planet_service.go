@@ -39,14 +39,14 @@ func (service *Service) Execute(ctx context.Context, dto Dto) (created entities.
 	response.Fields = validations.ValidateStruct(&dto, "")
 	comm := communication.New()
 
-	filter := &map[string]interface{}{"name": dto.Name}
-	planets, err := service.Repository.All(ctx, filter)
+	//Check exists planet with this name
+	planetByName, err := service.Repository.FindByName(ctx, dto.Name)
 	if err != nil {
-		service.Logger.Info(ctx, "domain.planet.service.create.create_planet_service.Repository.All", err)
+		service.Logger.Info(ctx, "domain.planet.service.create.create_planet_service.Repository.FindByName", err)
 	}
 
 	//Check planet already exists
-	if len(planets) > 0 && planets[0].UUID != "" {
+	if planetByName.UUID != "" {
 		response.Fields = append(response.Fields, comm.Fields("name", "already_exists"))
 	}
 

@@ -17,7 +17,7 @@ services:
   planets:
     build:
       context: .
-      dockerfile: planets.Dockerfile
+      dockerfile: planet.Dockerfile
     container_name: planets
     ports:
       - "9099:9099"

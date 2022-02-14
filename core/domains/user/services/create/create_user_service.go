@@ -36,13 +36,13 @@ func (service *Service) Execute(ctx context.Context, dto Dto) (created entities.
 	response.Fields = validations.ValidateStruct(&dto, "")
 	comm := communication.New()
 
-	userFinderEmail, err := service.Repository.FindByEmail(ctx, dto.Email)
+	userByEmail, err := service.Repository.FindByEmail(ctx, dto.Email)
 	if err != nil {
 		service.Logger.Info(ctx, "domain.user.service.create.create_user_service.Repository.FindByEmail", err)
 	}
 
 	//Check e-mail in use
-	if userFinderEmail.UUID != "" {
+	if userByEmail.UUID != "" {
 		response.Fields = append(response.Fields, comm.Fields("email", "already_exists"))
 	}
 
