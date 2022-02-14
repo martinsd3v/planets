@@ -8,11 +8,29 @@ Optei por trabalhar com dois "Domínios" sendo "users" um gerenciamento de usuá
 
 Para facilitar os testes adicionei no repositório uma pasta contendo os arquivos do **POSTMAN** pasta importar os arquivos presentes nesta no POSTMAN e sucesso!
 
+## Tecnologias e ferramentas utilizadas:
+
+- GoLang
+- Docker
+- MongoDB
+- Memcache
+- Opentelemetri
+- Jeager UI
+- Echo Framework
+- Rest
+- Jwt
+
 ## Cobertura por testes:
 
 Para verificar a cobertura de testes basta rodar o comando: `make test-cover`
 
-![Coverage test](https://github.com/martinsd3v/planets/blob/main/test-coverage.png?raw=true)
+![Coverage test](https://github.com/martinsd3v/planets/blob/main/img/test-coverage.png?raw=true)
+
+## Observabilidade e Monitoramento
+
+Foi implementando OpenTelemetry juntamente com Jaeger para rastrear e monitorar toda aplicação, desde o ponto de entrada via Rest, passando pela execução dos serviços, mongoDB, camanda de cache, e log da aplicação. Para acompanhar o Jeager em tempo real basta acessar a URL: `http://localhost:16686/`
+
+![observability](https://github.com/martinsd3v/planets/blob/main/img/observability.png?raw=true)
 
 # Rodando o Projeto
 

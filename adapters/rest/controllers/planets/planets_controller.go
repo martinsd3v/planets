@@ -72,7 +72,7 @@ func Show() echo.HandlerFunc {
 	return func(echoCtx echo.Context) error {
 		uuid := echoCtx.Param("UUID")
 
-		span, ctx := util.TraceRestEndpoint(echoCtx, "index-planet")
+		span, ctx := util.TraceRestEndpoint(echoCtx, "show-planet")
 		defer span.Finish()
 
 		result, response := service(ctx).Show.Execute(ctx, uuid)
@@ -92,7 +92,7 @@ func Update() echo.HandlerFunc {
 		dto.UUID = echoCtx.Param("UUID")
 		util.Parser(echoCtx.Request(), &dto)
 
-		span, ctx := util.TraceRestEndpoint(echoCtx, "index-planet")
+		span, ctx := util.TraceRestEndpoint(echoCtx, "update-planet")
 		defer span.Finish()
 
 		result, response := service(ctx).Update.Execute(ctx, dto)
@@ -110,7 +110,7 @@ func Destroy() echo.HandlerFunc {
 	return func(echoCtx echo.Context) error {
 		uuid := echoCtx.Param("UUID")
 
-		span, ctx := util.TraceRestEndpoint(echoCtx, "index-planet")
+		span, ctx := util.TraceRestEndpoint(echoCtx, "destroy-planet")
 		defer span.Finish()
 
 		response := service(ctx).Destroy.Execute(ctx, uuid)
