@@ -8,6 +8,7 @@ import (
 	"github.com/martinsd3v/planets/core/tools/providers/cache"
 	client "github.com/martinsd3v/planets/core/tools/providers/http_client"
 	"github.com/martinsd3v/planets/core/tools/providers/logger"
+	"github.com/martinsd3v/planets/core/tools/providers/tracer"
 )
 
 //Service ...
@@ -28,23 +29,27 @@ type Result struct {
 }
 
 //Execute service
-func (service *Service) Execute(ctx context.Context, planetName string) int {
+func (service *Service) Execute(ctx context.Context, name string) int {
+	identifierTracer := "films.planet.service"
+	span := tracer.New(identifierTracer).StartSpanWidthContext(ctx, identifierTracer, tracer.Options{Key: identifierTracer + ".name", Value: name})
+	defer span.Finish()
+
 	var quantityFilms int
-	if service.Cache.Get(planetName, &quantityFilms) == nil {
+	if service.Cache.Get(ctx, name, &quantityFilms) == nil {
 		return quantityFilms
 	}
 
 	apiBase := "https://swapi.dev/api/planets/?search="
-	response, err := service.HTTPClient.Get(apiBase + planetName)
+	response, err := service.HTTPClient.Get(apiBase + name)
 	if err != nil {
-		service.Logger.Error("domain.movies.service.movies_planet_service.HTTPClient.Get", err)
+		service.Logger.Error(ctx, "domain.movies.service.movies_planet_service.HTTPClient.Get", err)
 		return 0
 	}
 
 	var films ResponseAPI
 	err = json.NewDecoder(response.Body).Decode(&films)
 	if err != nil {
-		service.Logger.Error("domain.movies.service.movies_planet_service.json.NewDecoder.Decode", err)
+		service.Logger.Error(ctx, "domain.movies.service.movies_planet_service.json.NewDecoder.Decode", err)
 		return 0
 	}
 
@@ -54,7 +59,7 @@ func (service *Service) Execute(ctx context.Context, planetName string) int {
 		}
 
 		cacheExpireTime := time.Minute * 20
-		service.Cache.WithExpiration(cacheExpireTime).Set(planetName, quantityFilms)
+		service.Cache.WithExpiration(cacheExpireTime).Set(ctx, name, quantityFilms)
 	}
 
 	return quantityFilms

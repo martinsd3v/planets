@@ -5,6 +5,7 @@
 package mocks
 
 import (
+	context "context"
 	reflect "reflect"
 	time "time"
 
@@ -36,59 +37,59 @@ func (m *MockICacheProvider) EXPECT() *MockICacheProviderMockRecorder {
 }
 
 // Clear mocks base method.
-func (m *MockICacheProvider) Clear() error {
+func (m *MockICacheProvider) Clear(ctx context.Context) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Clear")
+	ret := m.ctrl.Call(m, "Clear", ctx)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Clear indicates an expected call of Clear.
-func (mr *MockICacheProviderMockRecorder) Clear() *gomock.Call {
+func (mr *MockICacheProviderMockRecorder) Clear(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Clear", reflect.TypeOf((*MockICacheProvider)(nil).Clear))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Clear", reflect.TypeOf((*MockICacheProvider)(nil).Clear), ctx)
 }
 
 // Delete mocks base method.
-func (m *MockICacheProvider) Delete(key string) error {
+func (m *MockICacheProvider) Delete(ctx context.Context, key string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Delete", key)
+	ret := m.ctrl.Call(m, "Delete", ctx, key)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Delete indicates an expected call of Delete.
-func (mr *MockICacheProviderMockRecorder) Delete(key interface{}) *gomock.Call {
+func (mr *MockICacheProviderMockRecorder) Delete(ctx, key interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockICacheProvider)(nil).Delete), key)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockICacheProvider)(nil).Delete), ctx, key)
 }
 
 // Get mocks base method.
-func (m *MockICacheProvider) Get(key string, value interface{}) error {
+func (m *MockICacheProvider) Get(ctx context.Context, key string, value interface{}) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Get", key, value)
+	ret := m.ctrl.Call(m, "Get", ctx, key, value)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Get indicates an expected call of Get.
-func (mr *MockICacheProviderMockRecorder) Get(key, value interface{}) *gomock.Call {
+func (mr *MockICacheProviderMockRecorder) Get(ctx, key, value interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockICacheProvider)(nil).Get), key, value)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockICacheProvider)(nil).Get), ctx, key, value)
 }
 
 // Set mocks base method.
-func (m *MockICacheProvider) Set(key string, value interface{}) error {
+func (m *MockICacheProvider) Set(ctx context.Context, key string, value interface{}) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Set", key, value)
+	ret := m.ctrl.Call(m, "Set", ctx, key, value)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Set indicates an expected call of Set.
-func (mr *MockICacheProviderMockRecorder) Set(key, value interface{}) *gomock.Call {
+func (mr *MockICacheProviderMockRecorder) Set(ctx, key, value interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Set", reflect.TypeOf((*MockICacheProvider)(nil).Set), key, value)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Set", reflect.TypeOf((*MockICacheProvider)(nil).Set), ctx, key, value)
 }
 
 // WithExpiration mocks base method.

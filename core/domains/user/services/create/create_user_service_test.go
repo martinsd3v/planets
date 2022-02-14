@@ -57,8 +57,8 @@ func TestService(t *testing.T) {
 			},
 			prepare: func(repostitoryMock *mocks.MockIUserRepository, hashMock *mocks.MockIHashProvider, loggerMock *mocks.MockILoggerProvider) {
 				repostitoryMock.EXPECT().FindByEmail(gomock.Any(), gomock.Any()).Return(entities.User{UUID: "OuterUserID"}, errors.New("error"))
+				loggerMock.EXPECT().Info(gomock.Any(), gomock.Any(), gomock.Any())
 				loggerMock.EXPECT().Info(gomock.Any(), gomock.Any())
-				loggerMock.EXPECT().Info(gomock.Any())
 			},
 		},
 		"error: on repository Create": {
@@ -76,7 +76,7 @@ func TestService(t *testing.T) {
 				repostitoryMock.EXPECT().FindByEmail(gomock.Any(), gomock.Any()).Return(entities.User{}, nil)
 				hashMock.EXPECT().Create(gomock.Any()).Return("hash")
 				repostitoryMock.EXPECT().Create(gomock.Any(), gomock.Any()).Return(entities.User{}, errors.New("error"))
-				loggerMock.EXPECT().Error(gomock.Any(), gomock.Any())
+				loggerMock.EXPECT().Error(gomock.Any(), gomock.Any(), gomock.Any())
 			},
 		},
 	}

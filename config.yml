@@ -11,3 +11,6 @@ web:
 memcache:
   host: "memcached"
   port: "11211"
+jaeger:
+  host: "jaeger"
+  port: "6831"

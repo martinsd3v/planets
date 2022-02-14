@@ -44,7 +44,7 @@ func TestService(t *testing.T) {
 			},
 			prepare: func(repostitoryMock *mocks.MockIUserRepository, loggerMock *mocks.MockILoggerProvider) {
 				repostitoryMock.EXPECT().All(gomock.Any()).Return(entities.Users{}, errors.New("error"))
-				loggerMock.EXPECT().Error(gomock.Any())
+				loggerMock.EXPECT().Error(gomock.Any(), gomock.Any())
 			},
 		},
 	}

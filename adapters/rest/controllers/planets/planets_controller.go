@@ -30,88 +30,92 @@ func service(ctx context.Context) *services.Services {
 
 //Create ...
 func Create() echo.HandlerFunc {
-	return func(c echo.Context) error {
+	return func(echoCtx echo.Context) error {
 		dto := create.Dto{}
-		util.Parser(c.Request(), &dto)
+		util.Parser(echoCtx.Request(), &dto)
 
-		ctx := c.Request().Context()
-		service := service(ctx).Create
-		created, response := service.Execute(ctx, dto)
+		span, ctx := util.TraceRestEndpoint(echoCtx, "create-planet")
+		defer span.Finish()
+
+		created, response := service(ctx).Create.Execute(ctx, dto)
 		if created.UUID != "" {
 			response.Data = created.PublicPlanet()
 		}
 
-		c.JSON(response.Status, response)
+		echoCtx.JSON(response.Status, response)
 		return nil
 	}
 }
 
 //Index ...
 func Index() echo.HandlerFunc {
-	return func(c echo.Context) error {
+	return func(echoCtx echo.Context) error {
 		filters := map[string]interface{}{}
-		name := c.QueryParam("name")
+		name := echoCtx.QueryParam("name")
 		if name != "" {
 			filters["name"] = name
 		}
 
-		ctx := c.Request().Context()
-		service := service(ctx).Index
-		result, response := service.Execute(ctx, &filters)
+		span, ctx := util.TraceRestEndpoint(echoCtx, "index-planet")
+		defer span.Finish()
+
+		result, response := service(ctx).Index.Execute(ctx, &filters)
 		response.Data = result.PublicPlanets()
 
-		c.JSON(response.Status, response)
+		echoCtx.JSON(response.Status, response)
 		return nil
 	}
 }
 
 //Show ...
 func Show() echo.HandlerFunc {
-	return func(c echo.Context) error {
-		uuid := c.Param("UUID")
+	return func(echoCtx echo.Context) error {
+		uuid := echoCtx.Param("UUID")
 
-		ctx := c.Request().Context()
-		service := service(ctx).Show
-		result, response := service.Execute(ctx, uuid)
+		span, ctx := util.TraceRestEndpoint(echoCtx, "show-planet")
+		defer span.Finish()
 
+		result, response := service(ctx).Show.Execute(ctx, uuid)
 		if result.UUID != "" {
 			response.Data = result.PublicPlanet()
 		}
 
-		c.JSON(response.Status, response)
+		echoCtx.JSON(response.Status, response)
 		return nil
 	}
 }
 
 //Update ...
 func Update() echo.HandlerFunc {
-	return func(c echo.Context) error {
+	return func(echoCtx echo.Context) error {
 		dto := update.Dto{}
-		dto.UUID = c.Param("UUID")
-		util.Parser(c.Request(), &dto)
+		dto.UUID = echoCtx.Param("UUID")
+		util.Parser(echoCtx.Request(), &dto)
 
-		ctx := c.Request().Context()
-		service := service(ctx).Update
-		result, response := service.Execute(ctx, dto)
+		span, ctx := util.TraceRestEndpoint(echoCtx, "update-planet")
+		defer span.Finish()
+
+		result, response := service(ctx).Update.Execute(ctx, dto)
 		if result.UUID != "" {
 			response.Data = result.PublicPlanet()
 		}
 
-		c.JSON(response.Status, response)
+		echoCtx.JSON(response.Status, response)
 		return nil
 	}
 }
 
 //Destroy ...
 func Destroy() echo.HandlerFunc {
-	return func(c echo.Context) error {
-		uuid := c.Param("UUID")
+	return func(echoCtx echo.Context) error {
+		uuid := echoCtx.Param("UUID")
 
-		ctx := c.Request().Context()
-		service := service(ctx).Destroy
-		response := service.Execute(ctx, uuid)
+		span, ctx := util.TraceRestEndpoint(echoCtx, "destroy-planet")
+		defer span.Finish()
 
-		c.JSON(response.Status, response)
+		response := service(ctx).Destroy.Execute(ctx, uuid)
+
+		echoCtx.JSON(response.Status, response)
 		return nil
 	}
 }

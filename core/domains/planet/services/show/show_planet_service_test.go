@@ -47,7 +47,7 @@ func TestService(t *testing.T) {
 			},
 			prepare: func(repostitoryMock *mocks.MockIPlanetRepository, loggerMock *mocks.MockILoggerProvider) {
 				repostitoryMock.EXPECT().FindByUUID(gomock.Any(), gomock.Any()).Return(entities.Planet{}, errors.New("error"))
-				loggerMock.EXPECT().Error(gomock.Any())
+				loggerMock.EXPECT().Error(gomock.Any(), gomock.Any())
 			},
 		},
 	}

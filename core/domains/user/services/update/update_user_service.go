@@ -9,6 +9,7 @@ import (
 	"github.com/martinsd3v/planets/core/tools/communication"
 	"github.com/martinsd3v/planets/core/tools/providers/hash"
 	"github.com/martinsd3v/planets/core/tools/providers/logger"
+	"github.com/martinsd3v/planets/core/tools/providers/tracer"
 	"github.com/martinsd3v/planets/core/tools/validations"
 )
 
@@ -29,13 +30,17 @@ type Service struct {
 
 //Execute responsável por atualizar registros
 func (service *Service) Execute(ctx context.Context, dto Dto) (updated entities.User, response communication.Response) {
+	identifierTracer := "update.user.service"
+	span := tracer.New(identifierTracer).StartSpanWidthContext(ctx, identifierTracer, tracer.Options{Key: identifierTracer + ".dto", Value: dto})
+	defer span.Finish()
+
 	response.Fields = validations.ValidateStruct(&dto, "")
 	comm := communication.New()
 
 	//Check e-mail in use
 	userFinderEmail, err := service.Repository.FindByEmail(ctx, dto.Email)
 	if err != nil {
-		service.Logger.Info("domain.user.service.update.update_user_service.Repository.FindByEmail", err)
+		service.Logger.Info(ctx, "domain.user.service.update.update_user_service.Repository.FindByEmail", err)
 	}
 
 	if userFinderEmail.UUID != "" && userFinderEmail.UUID != dto.UUID {
@@ -45,7 +50,7 @@ func (service *Service) Execute(ctx context.Context, dto Dto) (updated entities.
 	//Check exists user with this identifier
 	userFinderUUID, err := service.Repository.FindByUUID(ctx, dto.UUID)
 	if err != nil {
-		service.Logger.Error("domain.user.service.update.update_user_service.Repository.FindByUUID", err)
+		service.Logger.Error(ctx, "domain.user.service.update.update_user_service.Repository.FindByUUID", err)
 		response = comm.Response(500, "error_update")
 		return
 	}
@@ -55,7 +60,7 @@ func (service *Service) Execute(ctx context.Context, dto Dto) (updated entities.
 	}
 
 	if len(response.Fields) > 0 {
-		service.Logger.Info("domain.user.service.update.update_user_service.ValidationError")
+		service.Logger.Info(ctx, "domain.user.service.update.update_user_service.ValidationError")
 		resp := comm.Response(400, "validate_failed")
 		resp.Fields = response.Fields
 		response = resp
@@ -76,7 +81,7 @@ func (service *Service) Execute(ctx context.Context, dto Dto) (updated entities.
 	updated, err = service.Repository.Save(ctx, userFinderUUID)
 
 	if err != nil {
-		service.Logger.Error("domain.user.service.update.update_user_service.Repository.Save", err)
+		service.Logger.Error(ctx, "domain.user.service.update.update_user_service.Repository.Save", err)
 		response = comm.Response(500, "error_update")
 		return
 	}

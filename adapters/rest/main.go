@@ -14,6 +14,7 @@ import (
 	"github.com/martinsd3v/planets/core/tools/communication"
 	"github.com/martinsd3v/planets/core/tools/providers/cache"
 	"github.com/martinsd3v/planets/core/tools/providers/logger"
+	"github.com/martinsd3v/planets/core/tools/providers/tracer"
 )
 
 func init() {
@@ -32,16 +33,22 @@ func main() {
 
 	connection := mongodb.New(ctx)
 	if connection.Error != nil {
-		log.Error("Error connecting to database", connection.Error)
+		log.Error(ctx, "Error connecting to database", connection.Error)
 		return
 	}
 
 	memcacheHost := viper.GetString("memcache.host") + ":" + viper.GetString("memcache.port")
 	_, err := cache.New(memcacheHost)
 	if err != nil {
-		log.Error("Error connecting to memcache", err)
+		log.Error(ctx, "Error connecting to memcache", err)
 		return
 	}
+
+	jaegerTracer := tracer.New("planets")
+	if jaegerTracer.Error != nil {
+		log.Error(ctx, "Error connecting to jaeger", jaegerTracer)
+	}
+	defer jaegerTracer.Closer.Close()
 
 	Echo := echo.New()
 	routers.StartRouters(Echo)

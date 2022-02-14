@@ -28,7 +28,7 @@ func main() {
 
 	connection := mongodb.New(ctx)
 	if connection.Error != nil {
-		log.Error("Error connecting to database", connection.Error)
+		log.Error(ctx, "Error connecting to database", connection.Error)
 		return
 	}
 

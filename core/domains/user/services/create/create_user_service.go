@@ -9,6 +9,7 @@ import (
 	"github.com/martinsd3v/planets/core/tools/communication"
 	"github.com/martinsd3v/planets/core/tools/providers/hash"
 	"github.com/martinsd3v/planets/core/tools/providers/logger"
+	"github.com/martinsd3v/planets/core/tools/providers/tracer"
 	"github.com/martinsd3v/planets/core/tools/validations"
 )
 
@@ -28,12 +29,16 @@ type Service struct {
 
 //Execute Serviço responsável pela inserção de registros
 func (service *Service) Execute(ctx context.Context, dto Dto) (created entities.User, response communication.Response) {
+	identifierTracer := "create.user.service"
+	span := tracer.New(identifierTracer).StartSpanWidthContext(ctx, identifierTracer, tracer.Options{Key: identifierTracer + ".dto", Value: dto})
+	defer span.Finish()
+
 	response.Fields = validations.ValidateStruct(&dto, "")
 	comm := communication.New()
 
 	userFinderEmail, err := service.Repository.FindByEmail(ctx, dto.Email)
 	if err != nil {
-		service.Logger.Info("domain.user.service.create.create_user_service.Repository.FindByEmail", err)
+		service.Logger.Info(ctx, "domain.user.service.create.create_user_service.Repository.FindByEmail", err)
 	}
 
 	//Check e-mail in use
@@ -42,7 +47,7 @@ func (service *Service) Execute(ctx context.Context, dto Dto) (created entities.
 	}
 
 	if len(response.Fields) > 0 {
-		service.Logger.Info("domain.user.service.create.create_user_service.ValidationError")
+		service.Logger.Info(ctx, "domain.user.service.create.create_user_service.ValidationError")
 		resp := comm.Response(400, "validate_failed")
 		resp.Fields = response.Fields
 		response = resp
@@ -62,7 +67,7 @@ func (service *Service) Execute(ctx context.Context, dto Dto) (created entities.
 	created, err = service.Repository.Create(ctx, *user)
 
 	if err != nil {
-		service.Logger.Error("domain.user.service.create.create_user_service.Repository.Create", err)
+		service.Logger.Error(ctx, "domain.user.service.create.create_user_service.Repository.Create", err)
 		response = comm.Response(500, "error_create")
 		return
 	}

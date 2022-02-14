@@ -57,9 +57,9 @@ func TestService(t *testing.T) {
 			},
 			prepare: func(repostitoryMock *mocks.MockIUserRepository, hashMock *mocks.MockIHashProvider, loggerMock *mocks.MockILoggerProvider) {
 				repostitoryMock.EXPECT().FindByEmail(gomock.Any(), gomock.Any()).Return(entities.User{}, errors.New("error"))
-				loggerMock.EXPECT().Info(gomock.Any(), gomock.Any())
+				loggerMock.EXPECT().Info(gomock.Any(), gomock.Any(), gomock.Any())
 				repostitoryMock.EXPECT().FindByUUID(gomock.Any(), gomock.Any()).Return(entities.User{}, errors.New("error"))
-				loggerMock.EXPECT().Error(gomock.Any(), gomock.Any())
+				loggerMock.EXPECT().Error(gomock.Any(), gomock.Any(), gomock.Any())
 			},
 		},
 		"error: on repository FindByUUID": {
@@ -76,7 +76,7 @@ func TestService(t *testing.T) {
 			prepare: func(repostitoryMock *mocks.MockIUserRepository, hashMock *mocks.MockIHashProvider, loggerMock *mocks.MockILoggerProvider) {
 				repostitoryMock.EXPECT().FindByEmail(gomock.Any(), gomock.Any()).Return(expectedData, nil)
 				repostitoryMock.EXPECT().FindByUUID(gomock.Any(), gomock.Any()).Return(entities.User{}, errors.New("error"))
-				loggerMock.EXPECT().Error(gomock.Any(), gomock.Any())
+				loggerMock.EXPECT().Error(gomock.Any(), gomock.Any(), gomock.Any())
 			},
 		},
 		"error: on validation": {
@@ -93,7 +93,7 @@ func TestService(t *testing.T) {
 			prepare: func(repostitoryMock *mocks.MockIUserRepository, hashMock *mocks.MockIHashProvider, loggerMock *mocks.MockILoggerProvider) {
 				repostitoryMock.EXPECT().FindByEmail(gomock.Any(), gomock.Any()).Return(expectedData, nil)
 				repostitoryMock.EXPECT().FindByUUID(gomock.Any(), gomock.Any()).Return(entities.User{}, nil)
-				loggerMock.EXPECT().Info(gomock.Any())
+				loggerMock.EXPECT().Info(gomock.Any(), gomock.Any())
 			},
 		},
 		"error: on repository Save": {
@@ -113,7 +113,7 @@ func TestService(t *testing.T) {
 				repostitoryMock.EXPECT().FindByUUID(gomock.Any(), gomock.Any()).Return(expectedData, nil)
 				hashMock.EXPECT().Create(gomock.Any()).Return("hash")
 				repostitoryMock.EXPECT().Save(gomock.Any(), gomock.Any()).Return(entities.User{}, errors.New("error"))
-				loggerMock.EXPECT().Error(gomock.Any(), gomock.Any())
+				loggerMock.EXPECT().Error(gomock.Any(), gomock.Any(), gomock.Any())
 			},
 		},
 	}

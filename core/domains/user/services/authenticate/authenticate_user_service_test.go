@@ -45,7 +45,7 @@ func TestService(t *testing.T) {
 				Message: comm.Mapping["validate_failed"].Message,
 			},
 			prepare: func(repostitoryMock *mocks.MockIUserRepository, hashMock *mocks.MockIHashProvider, jwtMock *mocks.MockIJwtProvider, loggerMock *mocks.MockILoggerProvider) {
-				loggerMock.EXPECT().Info(gomock.Any())
+				loggerMock.EXPECT().Info(gomock.Any(), gomock.Any())
 			},
 		},
 		"error: on repository": {
@@ -61,7 +61,7 @@ func TestService(t *testing.T) {
 			},
 			prepare: func(repostitoryMock *mocks.MockIUserRepository, hashMock *mocks.MockIHashProvider, jwtMock *mocks.MockIJwtProvider, loggerMock *mocks.MockILoggerProvider) {
 				repostitoryMock.EXPECT().FindByEmail(gomock.Any(), gomock.Any()).Return(entities.User{}, errors.New("error"))
-				loggerMock.EXPECT().Error(gomock.Any())
+				loggerMock.EXPECT().Error(gomock.Any(), gomock.Any())
 			},
 		},
 		"error: on jwt": {
@@ -79,7 +79,7 @@ func TestService(t *testing.T) {
 				repostitoryMock.EXPECT().FindByEmail(gomock.Any(), gomock.Any()).Return(entities.User{UUID: "uuid"}, nil)
 				hashMock.EXPECT().Compare(gomock.Any(), gomock.Any()).Return(true)
 				jwtMock.EXPECT().CreateToken(gomock.Any()).Return(nil, errors.New("error"))
-				loggerMock.EXPECT().Error(gomock.Any())
+				loggerMock.EXPECT().Error(gomock.Any(), gomock.Any())
 			},
 		},
 		"error: deleted user": {

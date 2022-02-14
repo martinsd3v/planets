@@ -29,102 +29,105 @@ func service(ctx context.Context) *services.Services {
 
 //Auth ...
 func Auth() echo.HandlerFunc {
-	return func(c echo.Context) error {
+	return func(echoCtx echo.Context) error {
 		dto := authenticate.Dto{}
+		util.Parser(echoCtx.Request(), &dto)
 
-		util.Parser(c.Request(), &dto)
+		span, ctx := util.TraceRestEndpoint(echoCtx, "auth-user")
+		defer span.Finish()
 
-		ctx := c.Request().Context()
-		service := service(ctx).Authenticate
-		token, response := service.Execute(ctx, dto)
+		token, response := service(ctx).Authenticate.Execute(ctx, dto)
 		if token != "" {
 			response.Data = token
 		}
 
-		c.JSON(response.Status, response)
+		echoCtx.JSON(response.Status, response)
 		return nil
 	}
 }
 
 //Create ...
 func Create() echo.HandlerFunc {
-	return func(c echo.Context) error {
+	return func(echoCtx echo.Context) error {
 		dto := create.Dto{}
+		util.Parser(echoCtx.Request(), &dto)
 
-		util.Parser(c.Request(), &dto)
+		span, ctx := util.TraceRestEndpoint(echoCtx, "create-user")
+		defer span.Finish()
 
-		ctx := c.Request().Context()
-		service := service(ctx).Create
-		created, response := service.Execute(ctx, dto)
+		created, response := service(ctx).Create.Execute(ctx, dto)
 		if created.UUID != "" {
 			response.Data = created.PublicUser()
 		}
 
-		c.JSON(response.Status, response)
+		echoCtx.JSON(response.Status, response)
 		return nil
 	}
 }
 
 //Index ...
 func Index() echo.HandlerFunc {
-	return func(c echo.Context) error {
-		ctx := c.Request().Context()
-		service := service(ctx).Index
-		result, response := service.Execute(ctx)
+	return func(echoCtx echo.Context) error {
+		span, ctx := util.TraceRestEndpoint(echoCtx, "index-user")
+		defer span.Finish()
+
+		result, response := service(ctx).Index.Execute(ctx)
 		response.Data = result.PublicUsers()
 
-		c.JSON(response.Status, response)
+		echoCtx.JSON(response.Status, response)
 		return nil
 	}
 }
 
 //Show ...
 func Show() echo.HandlerFunc {
-	return func(c echo.Context) error {
-		uuid := c.Param("UUID")
+	return func(echoCtx echo.Context) error {
+		uuid := echoCtx.Param("UUID")
 
-		ctx := c.Request().Context()
-		service := service(ctx).Show
-		result, response := service.Execute(ctx, uuid)
+		span, ctx := util.TraceRestEndpoint(echoCtx, "show-user")
+		defer span.Finish()
 
+		result, response := service(ctx).Show.Execute(ctx, uuid)
 		if result.UUID != "" {
 			response.Data = result.PublicUser()
 		}
 
-		c.JSON(response.Status, response)
+		echoCtx.JSON(response.Status, response)
 		return nil
 	}
 }
 
 //Update ...
 func Update() echo.HandlerFunc {
-	return func(c echo.Context) error {
+	return func(echoCtx echo.Context) error {
 		dto := update.Dto{}
-		dto.UUID = c.Param("UUID")
-		util.Parser(c.Request(), &dto)
+		dto.UUID = echoCtx.Param("UUID")
+		util.Parser(echoCtx.Request(), &dto)
 
-		ctx := c.Request().Context()
-		service := service(ctx).Update
-		result, response := service.Execute(ctx, dto)
+		span, ctx := util.TraceRestEndpoint(echoCtx, "update-user")
+		defer span.Finish()
+
+		result, response := service(ctx).Update.Execute(ctx, dto)
 		if result.UUID != "" {
 			response.Data = result.PublicUser()
 		}
 
-		c.JSON(response.Status, response)
+		echoCtx.JSON(response.Status, response)
 		return nil
 	}
 }
 
 //Destroy ...
 func Destroy() echo.HandlerFunc {
-	return func(c echo.Context) error {
-		uuid := c.Param("UUID")
+	return func(echoCtx echo.Context) error {
+		uuid := echoCtx.Param("UUID")
 
-		ctx := c.Request().Context()
-		service := service(ctx).Destroy
-		response := service.Execute(ctx, uuid)
+		span, ctx := util.TraceRestEndpoint(echoCtx, "destroy-user")
+		defer span.Finish()
 
-		c.JSON(response.Status, response)
+		response := service(ctx).Destroy.Execute(ctx, uuid)
+
+		echoCtx.JSON(response.Status, response)
 		return nil
 	}
 }

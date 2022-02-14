@@ -2,10 +2,12 @@ package cache
 
 import (
 	"bytes"
+	"context"
 	"encoding/gob"
 	"time"
 
 	"github.com/bradfitz/gomemcache/memcache"
+	"github.com/martinsd3v/planets/core/tools/providers/tracer"
 )
 
 //MemCache struct for assign ICacheProvider
@@ -39,7 +41,11 @@ func (cache *MemCache) WithExpiration(expiration time.Duration) ICacheProvider {
 	return cache
 }
 
-func (cache *MemCache) Set(key string, value interface{}) error {
+func (cache *MemCache) Set(ctx context.Context, key string, value interface{}) error {
+	identifierTracer := "mem.cache.Set"
+	span := tracer.New(identifierTracer).StartSpanWidthContext(ctx, identifierTracer, tracer.Options{Key: key, Value: value})
+	defer span.Finish()
+
 	valueBytes, err := cache.encode(value)
 	if err != nil {
 		return err
@@ -53,7 +59,11 @@ func (cache *MemCache) Set(key string, value interface{}) error {
 	return nil
 }
 
-func (cache *MemCache) Get(key string, value interface{}) error {
+func (cache *MemCache) Get(ctx context.Context, key string, value interface{}) error {
+	identifierTracer := "mem.cache.Get"
+	span := tracer.New(identifierTracer).StartSpanWidthContext(ctx, identifierTracer, tracer.Options{Key: key, Value: value})
+	defer span.Finish()
+
 	item, err := cache.Client.Get(key)
 	if err != nil {
 		return err
@@ -66,11 +76,19 @@ func (cache *MemCache) Get(key string, value interface{}) error {
 	return nil
 }
 
-func (cache *MemCache) Delete(key string) error {
+func (cache *MemCache) Delete(ctx context.Context, key string) error {
+	identifierTracer := "mem.cache.Delete"
+	span := tracer.New(identifierTracer).StartSpanWidthContext(ctx, identifierTracer, tracer.Options{Key: key, Value: ""})
+	defer span.Finish()
+
 	return cache.Client.Delete(key)
 }
 
-func (cache *MemCache) Clear() error {
+func (cache *MemCache) Clear(ctx context.Context) error {
+	identifierTracer := "mem.cache.Clear"
+	span := tracer.New(identifierTracer).StartSpanWidthContext(ctx, identifierTracer)
+	defer span.Finish()
+
 	return cache.Client.FlushAll()
 }
 
