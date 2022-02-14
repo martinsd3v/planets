@@ -26,8 +26,7 @@ services:
     depends_on:
       - mongodb
       - memcached
-    environment:
-      WAIT_HOSTS: mongodb:27017
+      - jaeger    
     networks:
       - planets-network
     command: >
@@ -38,6 +37,14 @@ services:
     image: bitnami/memcached:latest  
     ports:
       - "11211:11211"
+    networks:
+      - planets-network
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "6831:6831/udp"
+      - "16686:16686"
     networks:
       - planets-network
 

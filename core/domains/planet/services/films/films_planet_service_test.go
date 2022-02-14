@@ -22,41 +22,41 @@ func TestService(t *testing.T) {
 			inputData:    "planetName",
 			expectedData: 2,
 			prepare: func(loggerMock *mocks.MockILoggerProvider, clientMock *mocks.MockIHTTPClientProvider, cacheMock *mocks.MockICacheProvider) {
-				cacheMock.EXPECT().Get(gomock.Any(), gomock.Any()).Return(errors.New("error"))
+				cacheMock.EXPECT().Get(gomock.Any(), gomock.Any(), gomock.Any()).Return(errors.New("error"))
 				bodyResponse := ioutil.NopCloser(bytes.NewReader([]byte(`{"results": [{"films": ["film1", "film2"]}]}`)))
 				clientMock.EXPECT().Get(gomock.Any()).Times(1).Return(&http.Response{Body: bodyResponse}, nil)
 				cacheMock.EXPECT().WithExpiration(gomock.Any()).Times(1).Return(cacheMock)
-				cacheMock.EXPECT().Set(gomock.Any(), gomock.Any()).Times(1)
+				cacheMock.EXPECT().Set(gomock.Any(), gomock.Any(), gomock.Any()).Times(1)
 			},
 		},
 		"success: from cache": {
 			inputData:    "planetName",
 			expectedData: 2,
 			prepare: func(loggerMock *mocks.MockILoggerProvider, clientMock *mocks.MockIHTTPClientProvider, cacheMock *mocks.MockICacheProvider) {
-				cacheMock.EXPECT().Get(gomock.Any(), gomock.Any()).SetArg(1, 2).Return(nil)
+				cacheMock.EXPECT().Get(gomock.Any(), gomock.Any(), gomock.Any()).SetArg(1, 2).Return(nil)
 			},
 		},
 		"error: on Client Request": {
 			inputData: "planetName",
 			prepare: func(loggerMock *mocks.MockILoggerProvider, clientMock *mocks.MockIHTTPClientProvider, cacheMock *mocks.MockICacheProvider) {
-				cacheMock.EXPECT().Get(gomock.Any(), gomock.Any()).Return(errors.New("error"))
+				cacheMock.EXPECT().Get(gomock.Any(), gomock.Any(), gomock.Any()).Return(errors.New("error"))
 				clientMock.EXPECT().Get(gomock.Any()).Times(1).Return(nil, errors.New("error"))
-				loggerMock.EXPECT().Error(gomock.Any(), gomock.Any()).Times(1)
+				loggerMock.EXPECT().Error(gomock.Any(), gomock.Any(), gomock.Any()).Times(1)
 			},
 		},
 		"error: on Response Body": {
 			inputData: "planetName",
 			prepare: func(loggerMock *mocks.MockILoggerProvider, clientMock *mocks.MockIHTTPClientProvider, cacheMock *mocks.MockICacheProvider) {
-				cacheMock.EXPECT().Get(gomock.Any(), gomock.Any()).Return(errors.New("error"))
+				cacheMock.EXPECT().Get(gomock.Any(), gomock.Any(), gomock.Any()).Return(errors.New("error"))
 				bodyResponse := ioutil.NopCloser(bytes.NewReader([]byte(`{invalidJson}`)))
 				clientMock.EXPECT().Get(gomock.Any()).Times(1).Return(&http.Response{Body: bodyResponse}, nil)
-				loggerMock.EXPECT().Error(gomock.Any(), gomock.Any()).Times(1)
+				loggerMock.EXPECT().Error(gomock.Any(), gomock.Any(), gomock.Any()).Times(1)
 			},
 		},
 		"success: zero results": {
 			inputData: "planetName",
 			prepare: func(loggerMock *mocks.MockILoggerProvider, clientMock *mocks.MockIHTTPClientProvider, cacheMock *mocks.MockICacheProvider) {
-				cacheMock.EXPECT().Get(gomock.Any(), gomock.Any()).Return(errors.New("error"))
+				cacheMock.EXPECT().Get(gomock.Any(), gomock.Any(), gomock.Any()).Return(errors.New("error"))
 				bodyResponse := ioutil.NopCloser(bytes.NewReader([]byte(`{"results": []}`)))
 				clientMock.EXPECT().Get(gomock.Any()).Times(1).Return(&http.Response{Body: bodyResponse}, nil)
 			},

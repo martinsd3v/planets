@@ -43,7 +43,7 @@ func TestService(t *testing.T) {
 			prepare: func(repostitoryMock *mocks.MockIPlanetRepository, loggerMock *mocks.MockILoggerProvider, cacheMock *mocks.MockICacheProvider) {
 				repostitoryMock.EXPECT().FindByUUID(gomock.Any(), gomock.Any()).Return(expectedData, nil)
 				repostitoryMock.EXPECT().All(gomock.Any(), gomock.Any()).Return(entities.Planets{}, nil)
-				cacheMock.EXPECT().Get(gomock.Any(), gomock.Any()).Return(nil)
+				cacheMock.EXPECT().Get(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil)
 				repostitoryMock.EXPECT().Save(gomock.Any(), gomock.Any()).Return(expectedData, nil)
 			},
 		},
@@ -61,7 +61,7 @@ func TestService(t *testing.T) {
 			},
 			prepare: func(repostitoryMock *mocks.MockIPlanetRepository, loggerMock *mocks.MockILoggerProvider, cacheMock *mocks.MockICacheProvider) {
 				repostitoryMock.EXPECT().FindByUUID(gomock.Any(), gomock.Any()).Return(entities.Planet{}, errors.New("error"))
-				loggerMock.EXPECT().Error(gomock.Any(), gomock.Any())
+				loggerMock.EXPECT().Error(gomock.Any(), gomock.Any(), gomock.Any())
 			},
 		},
 		"error: on validation": {
@@ -79,8 +79,8 @@ func TestService(t *testing.T) {
 			prepare: func(repostitoryMock *mocks.MockIPlanetRepository, loggerMock *mocks.MockILoggerProvider, cacheMock *mocks.MockICacheProvider) {
 				repostitoryMock.EXPECT().FindByUUID(gomock.Any(), gomock.Any()).Return(entities.Planet{}, nil)
 				repostitoryMock.EXPECT().All(gomock.Any(), gomock.Any()).Return(entities.Planets{{UUID: "uuid"}}, errors.New("error"))
+				loggerMock.EXPECT().Info(gomock.Any(), gomock.Any(), gomock.Any())
 				loggerMock.EXPECT().Info(gomock.Any(), gomock.Any())
-				loggerMock.EXPECT().Info(gomock.Any())
 			},
 		},
 		"error: on repository Save": {
@@ -98,9 +98,9 @@ func TestService(t *testing.T) {
 			prepare: func(repostitoryMock *mocks.MockIPlanetRepository, loggerMock *mocks.MockILoggerProvider, cacheMock *mocks.MockICacheProvider) {
 				repostitoryMock.EXPECT().FindByUUID(gomock.Any(), gomock.Any()).Return(expectedData, nil)
 				repostitoryMock.EXPECT().All(gomock.Any(), gomock.Any()).Return(entities.Planets{}, nil)
-				cacheMock.EXPECT().Get(gomock.Any(), gomock.Any()).Return(nil)
+				cacheMock.EXPECT().Get(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil)
 				repostitoryMock.EXPECT().Save(gomock.Any(), gomock.Any()).Return(entities.Planet{}, errors.New("error"))
-				loggerMock.EXPECT().Error(gomock.Any(), gomock.Any())
+				loggerMock.EXPECT().Error(gomock.Any(), gomock.Any(), gomock.Any())
 			},
 		},
 	}

@@ -1,6 +1,11 @@
 package logger
 
-import log "github.com/amoghe/distillog"
+import (
+	"context"
+
+	log "github.com/amoghe/distillog"
+	"github.com/martinsd3v/planets/core/tools/providers/tracer"
+)
 
 //Logger struct for assign interface
 type Logger struct{}
@@ -14,11 +19,19 @@ func New() *Logger {
 var _ ILoggerProvider = &Logger{}
 
 //Error ...
-func (l *Logger) Error(v ...interface{}) {
+func (l *Logger) Error(ctx context.Context, v ...interface{}) {
+	identifierTracer := "logger.error"
+	span := tracer.New(identifierTracer).StartSpanWidthContext(ctx, identifierTracer, tracer.Options{Key: identifierTracer, Value: v})
+	defer span.Finish()
+
 	log.Errorln(v...)
 }
 
 //Info ...
-func (l *Logger) Info(v ...interface{}) {
+func (l *Logger) Info(ctx context.Context, v ...interface{}) {
+	identifierTracer := "logger.info"
+	span := tracer.New(identifierTracer).StartSpanWidthContext(ctx, identifierTracer, tracer.Options{Key: identifierTracer, Value: v})
+	defer span.Finish()
+
 	log.Infoln(v...)
 }

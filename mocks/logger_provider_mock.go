@@ -5,6 +5,7 @@
 package mocks
 
 import (
+	context "context"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
@@ -34,9 +35,9 @@ func (m *MockILoggerProvider) EXPECT() *MockILoggerProviderMockRecorder {
 }
 
 // Error mocks base method.
-func (m *MockILoggerProvider) Error(v ...interface{}) {
+func (m *MockILoggerProvider) Error(ctx context.Context, v ...interface{}) {
 	m.ctrl.T.Helper()
-	varargs := []interface{}{}
+	varargs := []interface{}{ctx}
 	for _, a := range v {
 		varargs = append(varargs, a)
 	}
@@ -44,15 +45,16 @@ func (m *MockILoggerProvider) Error(v ...interface{}) {
 }
 
 // Error indicates an expected call of Error.
-func (mr *MockILoggerProviderMockRecorder) Error(v ...interface{}) *gomock.Call {
+func (mr *MockILoggerProviderMockRecorder) Error(ctx interface{}, v ...interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Error", reflect.TypeOf((*MockILoggerProvider)(nil).Error), v...)
+	varargs := append([]interface{}{ctx}, v...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Error", reflect.TypeOf((*MockILoggerProvider)(nil).Error), varargs...)
 }
 
 // Info mocks base method.
-func (m *MockILoggerProvider) Info(v ...interface{}) {
+func (m *MockILoggerProvider) Info(ctx context.Context, v ...interface{}) {
 	m.ctrl.T.Helper()
-	varargs := []interface{}{}
+	varargs := []interface{}{ctx}
 	for _, a := range v {
 		varargs = append(varargs, a)
 	}
@@ -60,7 +62,8 @@ func (m *MockILoggerProvider) Info(v ...interface{}) {
 }
 
 // Info indicates an expected call of Info.
-func (mr *MockILoggerProviderMockRecorder) Info(v ...interface{}) *gomock.Call {
+func (mr *MockILoggerProviderMockRecorder) Info(ctx interface{}, v ...interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Info", reflect.TypeOf((*MockILoggerProvider)(nil).Info), v...)
+	varargs := append([]interface{}{ctx}, v...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Info", reflect.TypeOf((*MockILoggerProvider)(nil).Info), varargs...)
 }

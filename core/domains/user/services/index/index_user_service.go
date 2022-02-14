@@ -7,6 +7,7 @@ import (
 	"github.com/martinsd3v/planets/core/domains/user/repositories"
 	"github.com/martinsd3v/planets/core/tools/communication"
 	"github.com/martinsd3v/planets/core/tools/providers/logger"
+	"github.com/martinsd3v/planets/core/tools/providers/tracer"
 )
 
 //Service ...
@@ -17,11 +18,15 @@ type Service struct {
 
 //Execute service responsible for find one register
 func (service *Service) Execute(ctx context.Context) (users entities.Users, response communication.Response) {
+	identifierTracer := "index.user.service"
+	span := tracer.New(identifierTracer).StartSpanWidthContext(ctx, identifierTracer)
+	defer span.Finish()
+
 	users, err := service.Repository.All(ctx)
 	comm := communication.New()
 
 	if err != nil {
-		service.Logger.Error("domain.user.service.index.index_user_service.Repository.All", err)
+		service.Logger.Error(ctx, "domain.user.service.index.index_user_service.Repository.All", err)
 		response = comm.Response(404, "error_list")
 		return
 	}

@@ -7,6 +7,7 @@ import (
 	"github.com/martinsd3v/planets/core/domains/user/repositories"
 	"github.com/martinsd3v/planets/core/tools/communication"
 	"github.com/martinsd3v/planets/core/tools/providers/logger"
+	"github.com/martinsd3v/planets/core/tools/providers/tracer"
 )
 
 //Service ...
@@ -17,11 +18,15 @@ type Service struct {
 
 //Execute service responsible for find one register
 func (service *Service) Execute(ctx context.Context, uuid string) (user entities.User, response communication.Response) {
+	identifierTracer := "show.user.service"
+	span := tracer.New(identifierTracer).StartSpanWidthContext(ctx, identifierTracer, tracer.Options{Key: identifierTracer + ".uuid", Value: uuid})
+	defer span.Finish()
+
 	user, err := service.Repository.FindByUUID(ctx, uuid)
 	comm := communication.New()
 
 	if err != nil {
-		service.Logger.Error("domain.user.service.show.show_user_service.Repository.FindByUUID", err)
+		service.Logger.Error(ctx, "domain.user.service.show.show_user_service.Repository.FindByUUID", err)
 		response = comm.Response(404, "error_list")
 		return
 	}

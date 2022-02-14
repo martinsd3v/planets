@@ -38,7 +38,7 @@ func TestService(t *testing.T) {
 				Message: comm.Mapping["validate_failed"].Message,
 			},
 			prepare: func(repostitoryMock *mocks.MockIPlanetRepository, loggerMock *mocks.MockILoggerProvider) {
-				loggerMock.EXPECT().Info(gomock.Any())
+				loggerMock.EXPECT().Info(gomock.Any(), gomock.Any())
 			},
 		},
 		"error: on repository FindByUUID": {
@@ -50,7 +50,7 @@ func TestService(t *testing.T) {
 			inputData: "planetID",
 			prepare: func(repostitoryMock *mocks.MockIPlanetRepository, loggerMock *mocks.MockILoggerProvider) {
 				repostitoryMock.EXPECT().FindByUUID(gomock.Any(), gomock.Any()).Return(entities.Planet{}, errors.New("error"))
-				loggerMock.EXPECT().Error(gomock.Any(), gomock.Any())
+				loggerMock.EXPECT().Error(gomock.Any(), gomock.Any(), gomock.Any())
 			},
 		},
 		"error: on repository Destroy": {
@@ -63,7 +63,7 @@ func TestService(t *testing.T) {
 			prepare: func(repostitoryMock *mocks.MockIPlanetRepository, loggerMock *mocks.MockILoggerProvider) {
 				repostitoryMock.EXPECT().FindByUUID(gomock.Any(), gomock.Any()).Return(entities.Planet{UUID: "planetID"}, nil)
 				repostitoryMock.EXPECT().Destroy(gomock.Any(), gomock.Any()).Return(errors.New("error"))
-				loggerMock.EXPECT().Error(gomock.Any(), gomock.Any())
+				loggerMock.EXPECT().Error(gomock.Any(), gomock.Any(), gomock.Any())
 			},
 		},
 		"error: on repository": {
@@ -75,7 +75,7 @@ func TestService(t *testing.T) {
 			inputData: "planetID",
 			prepare: func(repostitoryMock *mocks.MockIPlanetRepository, loggerMock *mocks.MockILoggerProvider) {
 				repostitoryMock.EXPECT().FindByUUID(gomock.Any(), gomock.Any()).Return(entities.Planet{}, nil)
-				loggerMock.EXPECT().Error(gomock.Any(), gomock.Any())
+				loggerMock.EXPECT().Error(gomock.Any(), gomock.Any(), gomock.Any())
 			},
 		},
 	}

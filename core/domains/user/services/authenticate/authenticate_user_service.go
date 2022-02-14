@@ -31,7 +31,7 @@ func (service *Service) Execute(ctx context.Context, dto Dto) (token string, res
 	comm := communication.New()
 
 	if len(response.Fields) > 0 {
-		service.Logger.Info("domain.user.service.authenticate.authenticate_user_service.ValidationError")
+		service.Logger.Info(ctx, "domain.user.service.authenticate.authenticate_user_service.ValidationError")
 		resp := comm.Response(400, "validate_failed")
 		resp.Fields = response.Fields
 		response = resp
@@ -40,7 +40,7 @@ func (service *Service) Execute(ctx context.Context, dto Dto) (token string, res
 
 	user, err := service.Repository.FindByEmail(ctx, dto.Email)
 	if err != nil {
-		service.Logger.Error("domain.user.service.authenticate.authenticate_user_service.Repository.FindByEmail", err)
+		service.Logger.Error(ctx, "domain.user.service.authenticate.authenticate_user_service.Repository.FindByEmail", err)
 		response = comm.Response(400, "authenticate_failed")
 		return
 	}
@@ -52,7 +52,7 @@ func (service *Service) Execute(ctx context.Context, dto Dto) (token string, res
 		if checkPassword {
 			tokenDetails, err := service.Jwt.CreateToken(jwt.TokenPayload{UserUUID: user.UUID})
 			if err != nil {
-				service.Logger.Error("domain.user.service.authenticate.authenticate_user_service.Jwt.CreateToken", err)
+				service.Logger.Error(ctx, "domain.user.service.authenticate.authenticate_user_service.Jwt.CreateToken", err)
 				response = comm.Response(400, "authenticate_failed")
 				return
 			}

@@ -41,7 +41,7 @@ func TestService(t *testing.T) {
 			},
 			prepare: func(repostitoryMock *mocks.MockIPlanetRepository, loggerMock *mocks.MockILoggerProvider, cacheMock *mocks.MockICacheProvider) {
 				repostitoryMock.EXPECT().All(gomock.Any(), gomock.Any()).Return(entities.Planets{}, nil)
-				cacheMock.EXPECT().Get(gomock.Any(), gomock.Any()).Return(nil)
+				cacheMock.EXPECT().Get(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil)
 				repostitoryMock.EXPECT().Create(gomock.Any(), gomock.Any()).Times(1).Return(expectedData, nil)
 			},
 		},
@@ -58,8 +58,8 @@ func TestService(t *testing.T) {
 			},
 			prepare: func(repostitoryMock *mocks.MockIPlanetRepository, loggerMock *mocks.MockILoggerProvider, cacheMock *mocks.MockICacheProvider) {
 				repostitoryMock.EXPECT().All(gomock.Any(), gomock.Any()).Return(entities.Planets{{UUID: "uuid"}}, errors.New("error"))
+				loggerMock.EXPECT().Info(gomock.Any(), gomock.Any(), gomock.Any())
 				loggerMock.EXPECT().Info(gomock.Any(), gomock.Any())
-				loggerMock.EXPECT().Info(gomock.Any())
 			},
 		},
 		"error: on repository Create": {
@@ -75,9 +75,9 @@ func TestService(t *testing.T) {
 			},
 			prepare: func(repostitoryMock *mocks.MockIPlanetRepository, loggerMock *mocks.MockILoggerProvider, cacheMock *mocks.MockICacheProvider) {
 				repostitoryMock.EXPECT().All(gomock.Any(), gomock.Any()).Return(entities.Planets{}, nil)
-				cacheMock.EXPECT().Get(gomock.Any(), gomock.Any()).Return(nil)
+				cacheMock.EXPECT().Get(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil)
 				repostitoryMock.EXPECT().Create(gomock.Any(), gomock.Any()).Times(1).Return(entities.Planet{}, errors.New("error"))
-				loggerMock.EXPECT().Error(gomock.Any(), gomock.Any())
+				loggerMock.EXPECT().Error(gomock.Any(), gomock.Any(), gomock.Any())
 			},
 		},
 	}
