@@ -78,6 +78,20 @@ func (repo *Repository) FindByUUID(ctx context.Context, uuid string) (entities.P
 	return data, nil
 }
 
+//FindByName find planet by uuid
+func (repo *Repository) FindByName(ctx context.Context, name string) (entities.Planet, error) {
+	identifierTracer := "mongodb.planets.respository.FindByName"
+	span := tracer.New(identifierTracer).StartSpanWidthContext(ctx, identifierTracer, tracer.Options{Key: identifierTracer + ".name", Value: name})
+	defer span.Finish()
+
+	var data entities.Planet
+	err := repo.Collection.FindOne(ctx, bson.M{"name": name}).Decode(&data)
+	if err != nil {
+		return data, err
+	}
+	return data, nil
+}
+
 //Destroy delete planet by uuid
 func (repo *Repository) Destroy(ctx context.Context, uuid string) error {
 	identifierTracer := "mongodb.planets.respository.Destroy"

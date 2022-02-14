@@ -33,6 +33,7 @@ func New(serviceName string) *JaegerTracer {
 	configuration := &config.Configuration{
 		ServiceName: serviceName,
 		Sampler: &config.SamplerConfig{
+
 			Type:  "const",
 			Param: 1,
 		},

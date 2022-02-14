@@ -30,7 +30,7 @@ Para verificar a cobertura de testes basta rodar o comando: `make test-cover`
 
 Foi implementando OpenTelemetry juntamente com Jaeger para rastrear e monitorar toda aplicação, desde o ponto de entrada via Rest, passando pela execução dos serviços, mongoDB, camanda de cache, e log da aplicação. Para acompanhar o Jeager em tempo real basta acessar a URL: `http://localhost:16686/`
 
-![observability](https://github.com/martinsd3v/planets/blob/main/img/observability.png?raw=true)
+![observability](https://github.com/martinsd3v/planets/blob/main/img/observability-jaeger.png?raw=true)
 
 # Rodando o Projeto
 

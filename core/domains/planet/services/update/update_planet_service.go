@@ -48,14 +48,13 @@ func (service *Service) Execute(ctx context.Context, dto Dto) (updated entities.
 		return
 	}
 
-	filter := &map[string]interface{}{"name": dto.Name}
-	planets, err := service.Repository.All(ctx, filter)
+	planetByName, err := service.Repository.FindByName(ctx, dto.Name)
 	if err != nil {
 		service.Logger.Info(ctx, "domain.planet.service.update.update_planet_service.Repository.All", err)
 	}
 
 	//Check planet already exists
-	if len(planets) > 0 && planets[0].UUID != planet.UUID {
+	if planetByName.UUID != "" && planetByName.UUID != planet.UUID {
 		response.Fields = append(response.Fields, comm.Fields("name", "already_exists"))
 	}
 

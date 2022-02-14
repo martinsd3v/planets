@@ -38,12 +38,12 @@ func (service *Service) Execute(ctx context.Context, dto Dto) (updated entities.
 	comm := communication.New()
 
 	//Check e-mail in use
-	userFinderEmail, err := service.Repository.FindByEmail(ctx, dto.Email)
+	userByEmail, err := service.Repository.FindByEmail(ctx, dto.Email)
 	if err != nil {
 		service.Logger.Info(ctx, "domain.user.service.update.update_user_service.Repository.FindByEmail", err)
 	}
 
-	if userFinderEmail.UUID != "" && userFinderEmail.UUID != dto.UUID {
+	if userByEmail.UUID != "" && userByEmail.UUID != dto.UUID {
 		response.Fields = append(response.Fields, comm.Fields("email", "already_exists"))
 	}
 
